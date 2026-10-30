@@ -1,0 +1,88 @@
+---
+import { Picture } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import { datum } from '../data/site';
+
+interface Props {
+  beitrag: CollectionEntry<'journal'>;
+  gross?: boolean;
+  ebene?: 'h2' | 'h3';
+  eager?: boolean;
+}
+const { beitrag, gross = false, ebene: Ueberschrift = 'h3', eager = false } = Astro.props;
+const { data } = beitrag;
+---
+
+<article class:list={['beitrag reveal', { 'beitrag--gross': gross }]}>
+  <a href={`/journal/${beitrag.id}/`} class="beitrag__link">
+    <div class="img-frame hover-zoom beitrag__bild">
+      <Picture
+        src={data.image}
+        alt={data.imageAlt}
+        widths={gross ? [480, 720, 1100, 1600] : [360, 480, 640, 800]}
+        sizes={gross ? '(min-width: 64rem) 55vw, 92vw' : '(min-width: 64rem) 30vw, (min-width: 40rem) 45vw, 92vw'}
+        formats={['avif', 'webp']}
+        loading={eager ? 'eager' : 'lazy'}
+        fetchpriority={eager ? 'high' : 'auto'}
+      />
+    </div>
+    <div class="beitrag__text">
+      <p class="beitrag__meta">
+        <span>{data.kategorie}</span>
+        <time datetime={data.date.toISOString()}>{datum(data.date)}</time>
+      </p>
+      <Ueberschrift class="beitrag__titel">{data.title}</Ueberschrift>
+      {gross && <p class="beitrag__teaser">{data.description}</p>}
+    </div>
+  </a>
+</article>
+
+<style>
+  .beitrag__link {
+    display: grid;
+    gap: 1.25rem;
+    text-decoration: none;
+  }
+  .beitrag__bild {
+    aspect-ratio: 3 / 2;
+  }
+  .beitrag__text {
+    display: grid;
+    gap: 0.6rem;
+  }
+  .beitrag__meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.8rem;
+    color: var(--ink-3);
+  }
+  .beitrag__meta span {
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--oak);
+  }
+  .beitrag__titel {
+    font-size: var(--step-2);
+    line-height: 1.12;
+  }
+  .beitrag__link:hover .beitrag__titel {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.15em;
+  }
+  .beitrag__teaser {
+    color: var(--ink-2);
+    max-width: 34rem;
+  }
+  @media (min-width: 56rem) {
+    .beitrag--gross .beitrag__link {
+      grid-template-columns: 1.3fr 1fr;
+      align-items: center;
+      gap: 3.5rem;
+    }
+    .beitrag--gross .beitrag__titel {
+      font-size: var(--step-3);
+    }
+  }
+</style>

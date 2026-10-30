@@ -1,0 +1,47 @@
+---
+interface Props {
+  class?: string;
+}
+const { class: className } = Astro.props;
+---
+
+<span class:list={['logo', className]}>
+  <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+    <path d="M3 3h26v11h-6l2 8h-8l2-8h-6l2 8H7l2-8H3z" fill="currentColor"></path>
+    <path d="M3 15.5h6l-2 8h8l-2-8h6l-2 8h8l-2-8h6V29H3z" fill="currentColor" opacity=".4"></path>
+  </svg>
+  <span class="logo__text">
+    <span class="logo__small">Tischlerei</span>
+    <span class="logo__name">Mustermann</span>
+  </span>
+</span>
+
+<style>
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    line-height: 1;
+  }
+  svg {
+    width: 2rem;
+    height: 2rem;
+    flex: none;
+  }
+  .logo__text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+  .logo__small {
+    font-size: 0.66rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .logo__name {
+    font-family: var(--font-display-stack);
+    font-size: 1.35rem;
+    letter-spacing: 0;
+  }
+</style>

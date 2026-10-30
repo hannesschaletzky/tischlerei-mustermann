@@ -1,0 +1,49 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageIntro from '../../components/PageIntro.astro';
+import PostCard from '../../components/PostCard.astro';
+
+const [neuester, ...weitere] = (await getCollection('journal')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+
+<BaseLayout
+  title="Journal"
+  description="Holzkunde, Pflegetipps und Einblicke in die Werkstatt: Im Journal der Tischlerei Mustermann teilen wir, was wir über Holz und Möbel wissen."
+>
+  <PageIntro
+    eyebrow="Journal"
+    title="Wissen aus der <em>Werkstatt</em>"
+    lead="Was wir in vielen Jahren über Holz, Möbel und gutes Handwerk gelernt haben, und ab und zu ein Blick hinter die Kulissen."
+  />
+
+  <section class="container journal" aria-label="Beiträge">
+    {neuester && <PostCard beitrag={neuester} gross ebene="h2" eager />}
+    <div class="raster">
+      {weitere.map((b) => <PostCard beitrag={b} ebene="h2" />)}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .journal {
+    display: grid;
+    gap: clamp(4rem, 3rem + 3vw, 6rem);
+    padding-bottom: var(--section);
+  }
+  .raster {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 4rem 2.5rem;
+  }
+  @media (min-width: 64rem) {
+    .raster {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  @media (max-width: 40rem) {
+    .raster {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

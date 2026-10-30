@@ -1,0 +1,336 @@
+---
+import { Picture } from 'astro:assets';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageIntro from '../components/PageIntro.astro';
+import Arrow from '../components/Arrow.astro';
+import CallToAction from '../components/CallToAction.astro';
+import { firma } from '../data/site';
+
+import meisterBild from '../assets/images/meister-lacht.jpg';
+import werkstattBild from '../assets/images/werkstatt-licht.jpg';
+import feinBild from '../assets/images/feinarbeit.jpg';
+import duebelBild from '../assets/images/flachduebel.jpg';
+import texturBild from '../assets/images/eiche-textur.jpg';
+
+const geschichte = [
+  { jahr: '1987', text: 'Hans Mustermann eröffnet eine kleine Bautischlerei in einer ehemaligen Scheune am Ortsrand.' },
+  { jahr: '1998', text: 'Der erste Esstisch Lindenhof entsteht, eigentlich als Hochzeitsgeschenk für die Nachbarn.' },
+  { jahr: '2011', text: 'Max Mustermann legt die Meisterprüfung ab und bringt CNC-Technik in die Werkstatt.' },
+  { jahr: '2016', text: 'Übergabe an die zweite Generation. Der Schwerpunkt verschiebt sich zum Möbel- und Innenausbau.' },
+  { jahr: '2022', text: 'Neue Werkstatt Am Sägewerk mit Photovoltaik, Späneheizung und eigener Ausstellung.' },
+];
+
+const team = [
+  { name: 'Max Mustermann', rolle: 'Tischlermeister, Inhaber' },
+  { name: 'Lena Mustermann', rolle: 'Gestalterin im Handwerk, Planung' },
+  { name: 'Jonas Becker', rolle: 'Tischlermeister, Innenausbau' },
+  { name: 'Aylin Demir', rolle: 'Tischlerin, Oberflächen' },
+  { name: 'Piotr Nowak', rolle: 'Tischler, Montage' },
+  { name: 'Hans Mustermann', rolle: 'Seniorchef, Restaurierung' },
+];
+
+const werte = [
+  { titel: 'Ehrliches Material', text: 'Massivholz aus der Region, natürliche Öle, keine Spanplatten hinter schönen Fronten.' },
+  { titel: 'Verbindungen, die halten', text: 'Zinken, Zapfen und Gratleisten. Wo Holz mit Holz verbunden wird, hält es ein Leben lang.' },
+  { titel: 'Feste Preise', text: 'Nach dem Aufmaß bekommen Sie ein Festpreisangebot. Was darin steht, steht auf der Rechnung.' },
+];
+---
+
+<BaseLayout
+  title="Werkstatt"
+  description="Die Tischlerei Mustermann ist ein Familienbetrieb in zweiter Generation. Lernen Sie unsere Werkstatt, unser Team und unsere Geschichte kennen."
+>
+  <PageIntro
+    eyebrow="Werkstatt"
+    title="Neun Menschen, eine Werkstatt, <em>viel Holz</em>"
+    lead={`Seit ${firma.gruendung} bauen wir in ${firma.ort} Möbel, inzwischen in zweiter Generation. Geblieben ist die Überzeugung, dass gute Arbeit Zeit braucht.`}
+  />
+
+  <div class="container">
+    <div class="img-frame breit">
+      <Picture
+        src={werkstattBild}
+        alt="Blick über eine Werkbank mit Handwerkzeug in die lichtdurchflutete Werkstatt"
+        widths={[800, 1300, 1900, 2400]}
+        sizes="(min-width: 80rem) 75rem, 95vw"
+        formats={['avif', 'webp']}
+        loading="eager"
+        fetchpriority="high"
+      />
+    </div>
+  </div>
+
+  <section class="section container geschichte" aria-labelledby="geschichte-titel">
+    <div class="geschichte__kopf">
+      <span class="eyebrow">Geschichte</span>
+      <h2 id="geschichte-titel" class="h2">Aus einer Scheune wurde eine Werkstatt</h2>
+      <div class="img-frame geschichte__bild reveal">
+        <Picture src={meisterBild} alt="Lachender Tischler bearbeitet ein Brett in einer vollen Werkstatt" widths={[480, 800, 1100]} sizes="(min-width: 60rem) 36vw, 92vw" formats={['avif', 'webp']} />
+      </div>
+    </div>
+    <ol class="zeitstrahl">
+      {
+        geschichte.map((g) => (
+          <li class="reveal">
+            <span class="zeitstrahl__jahr serif-nums">{g.jahr}</span>
+            <p>{g.text}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <section class="section dark" aria-labelledby="werte-titel">
+    <div class="container">
+      <span class="eyebrow">Wofür wir stehen</span>
+      <h2 id="werte-titel" class="h2 werte__titel">Drei Dinge, die wir <em>nicht</em> verhandeln</h2>
+      <ul class="werte">
+        {
+          werte.map((w, i) => (
+            <li class="reveal">
+              <span class="werte__nr">0{i + 1}</span>
+              <h3 class="h3">{w.titel}</h3>
+              <p>{w.text}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="section container" aria-labelledby="team-titel">
+    <div class="team__kopf">
+      <span class="eyebrow">Team</span>
+      <h2 id="team-titel" class="h2">Die Menschen hinter den Möbeln</h2>
+      <p class="lead">Dazu kommen drei Auszubildende, ohne die es in der Werkstatt deutlich ruhiger wäre.</p>
+    </div>
+    <ul class="team">
+      {
+        team.map((p) => (
+          <li class="reveal">
+            <span class="team__initialen" aria-hidden="true">
+              {p.name.split(' ').map((n) => n[0]).join('')}
+            </span>
+            <span class="team__name">{p.name}</span>
+            <span class="team__rolle">{p.rolle}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section class="section--tight container bilder" aria-label="Eindrücke aus der Werkstatt">
+    <div class="img-frame bilder__a reveal">
+      <Picture src={feinBild} alt="Tischler arbeitet konzentriert mit einem Hobel an einem hellen Brett" widths={[480, 800, 1200]} sizes="(min-width: 60rem) 45vw, 92vw" formats={['avif', 'webp']} />
+    </div>
+    <div class="img-frame bilder__b reveal">
+      <Picture src={duebelBild} alt="Flachdübelfräse schneidet eine Nut in ein Brett, Späne fliegen" widths={[400, 700, 1000]} sizes="(min-width: 60rem) 25vw, 45vw" formats={['avif', 'webp']} />
+    </div>
+    <div class="img-frame bilder__c reveal">
+      <Picture src={texturBild} alt="Nahaufnahme heller Eichenbretter mit feiner Maserung" widths={[400, 700, 1000]} sizes="(min-width: 60rem) 25vw, 45vw" formats={['avif', 'webp']} />
+    </div>
+  </section>
+
+  <section class="section container ausbildung" aria-labelledby="ausbildung-titel">
+    <div class="ausbildung__box">
+      <div>
+        <span class="eyebrow">Ausbildung &amp; Jobs</span>
+        <h2 id="ausbildung-titel" class="h2">Lust auf Holz?</h2>
+      </div>
+      <div class="ausbildung__text">
+        <p>
+          Wir bilden jedes Jahr aus und suchen ab August 2027 wieder eine Auszubildende oder einen Auszubildenden zur
+          Tischlerin oder zum Tischler. Praktika sind jederzeit möglich, auch für ein paar Tage in den Ferien.
+        </p>
+        <a href="/kontakt/" class="link-arrow">Melde dich bei uns <Arrow /></a>
+      </div>
+    </div>
+  </section>
+
+  <CallToAction
+    title="Kommen Sie <em>vorbei.</em>"
+    text="In unserer Ausstellung stehen Tische, Stühle und Holzmuster zum Anfassen. Samstags öffnen wir nach Vereinbarung. Bei einem Kaffee lässt sich vieles leichter besprechen."
+  />
+</BaseLayout>
+
+<style>
+  .breit {
+    aspect-ratio: 21 / 9;
+  }
+  .geschichte {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(2.5rem, 1rem + 5vw, 6rem);
+  }
+  .geschichte__kopf {
+    display: grid;
+    gap: 1.25rem;
+    align-content: start;
+  }
+  .geschichte__bild {
+    aspect-ratio: 4 / 3;
+    margin-top: 1.5rem;
+  }
+  .zeitstrahl {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    align-self: end;
+  }
+  .zeitstrahl li {
+    display: grid;
+    grid-template-columns: 6rem 1fr;
+    gap: 1.5rem;
+    padding-block: 1.75rem;
+    border-top: 1px solid var(--line);
+  }
+  .zeitstrahl__jahr {
+    font-family: var(--font-display-stack);
+    font-size: var(--step-3);
+    line-height: 1;
+    color: var(--oak);
+  }
+  .zeitstrahl p {
+    color: var(--ink-2);
+  }
+  .werte__titel {
+    margin-top: 1.25rem;
+    max-width: 16ch;
+  }
+  .werte__titel em {
+    color: #e7c8a2;
+  }
+  .werte {
+    list-style: none;
+    margin: 4rem 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2.5rem;
+  }
+  .werte li {
+    display: grid;
+    gap: 1rem;
+    align-content: start;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line);
+  }
+  .werte__nr {
+    font-size: 0.85rem;
+    color: #d9a56f;
+    letter-spacing: 0.1em;
+  }
+  .werte p {
+    color: var(--on-walnut-2);
+  }
+  .team__kopf {
+    display: grid;
+    gap: 1.25rem;
+    margin-bottom: 3.5rem;
+  }
+  .team {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+  .team li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
+    column-gap: 1.25rem;
+    align-items: center;
+    padding: 1.5rem;
+    background: var(--paper-2);
+    border-radius: var(--radius);
+  }
+  .team__initialen {
+    grid-row: span 2;
+    display: grid;
+    place-items: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+    background: var(--walnut);
+    color: var(--on-walnut);
+    font-family: var(--font-display-stack);
+    font-size: 1.35rem;
+  }
+  .team__name {
+    font-weight: 600;
+    align-self: end;
+  }
+  .team__rolle {
+    font-size: 0.9rem;
+    color: var(--ink-3);
+    align-self: start;
+  }
+  .bilder {
+    display: grid;
+    grid-template-columns: 1.8fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 1rem;
+    aspect-ratio: 16 / 9;
+  }
+  .bilder__a {
+    grid-row: span 2;
+  }
+  .ausbildung__box {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem 4rem;
+    align-items: end;
+    padding: clamp(2rem, 1rem + 4vw, 4.5rem);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+  }
+  .ausbildung__box > div:first-child {
+    display: grid;
+    gap: 1rem;
+  }
+  .ausbildung__text {
+    display: grid;
+    gap: 1.5rem;
+    justify-items: start;
+    color: var(--ink-2);
+  }
+  @media (max-width: 60rem) {
+    .breit {
+      aspect-ratio: 4 / 3;
+    }
+    .geschichte,
+    .ausbildung__box {
+      grid-template-columns: 1fr;
+    }
+    .werte,
+    .team {
+      grid-template-columns: 1fr 1fr;
+    }
+    .bilder {
+      aspect-ratio: auto;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto;
+    }
+    .bilder__a {
+      grid-row: auto;
+      grid-column: span 2;
+      aspect-ratio: 3 / 2;
+    }
+    .bilder__b,
+    .bilder__c {
+      aspect-ratio: 1;
+    }
+  }
+  @media (max-width: 40rem) {
+    .werte,
+    .team {
+      grid-template-columns: 1fr;
+    }
+    .zeitstrahl li {
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
+    }
+  }
+</style>

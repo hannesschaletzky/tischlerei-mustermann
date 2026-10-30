@@ -1,0 +1,67 @@
+---
+import { Picture } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import { euro } from '../data/site';
+
+interface Props {
+  produkt: CollectionEntry<'moebel'>;
+  sizes?: string;
+  ebene?: 'h2' | 'h3';
+  eager?: boolean;
+}
+const { produkt, sizes = '(min-width: 64rem) 30vw, (min-width: 40rem) 45vw, 92vw', ebene: Ueberschrift = 'h3', eager = false } = Astro.props;
+const { data } = produkt;
+---
+
+<article class="karte reveal" data-kategorie={data.kategorie}>
+  <a href={`/moebel/${produkt.id}/`} class="karte__link">
+    <div class="img-frame hover-zoom karte__bild">
+      <Picture src={data.image} alt={data.imageAlt} widths={[360, 480, 640, 800, 1000]}
+        sizes={sizes}
+        formats={['avif', 'webp']}
+        loading={eager ? 'eager' : 'lazy'}
+        fetchpriority={eager ? 'high' : 'auto'}
+      />
+    </div>
+    <div class="karte__text">
+      <p class="karte__typ">{data.typ}</p>
+      <Ueberschrift class="karte__titel">{data.title}</Ueberschrift>
+      <p class="karte__preis">ab {euro(data.preisAb)}</p>
+    </div>
+  </a>
+</article>
+
+<style>
+  .karte__link {
+    display: grid;
+    gap: 1.1rem;
+    text-decoration: none;
+  }
+  .karte__bild {
+    aspect-ratio: 4 / 5;
+  }
+  .karte__text {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: baseline;
+    gap: 0.15rem 1rem;
+  }
+  .karte__typ {
+    grid-column: 1 / -1;
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--ink-3);
+  }
+  .karte__titel {
+    font-size: var(--step-2);
+  }
+  .karte__preis {
+    font-size: 0.95rem;
+    color: var(--ink-2);
+  }
+  .karte__link:hover .karte__titel {
+    font-style: italic;
+  }
+</style>

@@ -1,0 +1,213 @@
+---
+import { Picture } from 'astro:assets';
+import { getCollection, render } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Arrow from '../../components/Arrow.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import { euro } from '../../data/site';
+
+export const getStaticPaths = (async () => {
+  const moebel = await getCollection('moebel');
+  return moebel.map((produkt) => ({ params: { slug: produkt.id }, props: { produkt } }));
+}) satisfies GetStaticPaths;
+
+const { produkt } = Astro.props;
+const { data } = produkt;
+const { Content } = await render(produkt);
+
+const verwandt = (await getCollection('moebel'))
+  .filter((m) => m.id !== produkt.id)
+  .sort((a, b) => Number(b.data.kategorie === data.kategorie) - Number(a.data.kategorie === data.kategorie) || a.data.order - b.data.order)
+  .slice(0, 3);
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: `${data.typ} ${data.title}`,
+  description: data.description,
+  brand: { '@type': 'Brand', name: 'Tischlerei Mustermann' },
+  material: data.hoelzer.join(', '),
+  offers: {
+    '@type': 'Offer',
+    priceCurrency: 'EUR',
+    price: data.preisAb,
+    availability: 'https://schema.org/MadeToOrder',
+    seller: { '@id': `${Astro.site}#betrieb` },
+  },
+};
+---
+
+<BaseLayout title={`${data.typ} ${data.title}`} description={data.description} image={data.image} jsonLd={jsonLd} krumen={[{ name: 'Möbel', href: '/moebel/' }]}>
+  <section class="container produkt">
+    <div class="galerie">
+      <div class="img-frame galerie__haupt">
+        <Picture
+          src={data.image}
+          alt={data.imageAlt}
+          widths={[640, 1000, 1400, 1900]}
+          sizes="(min-width: 60rem) 58vw, 92vw"
+          formats={['avif', 'webp']}
+          loading="eager"
+          fetchpriority="high"
+        />
+      </div>
+      {
+        data.details.map((d) => (
+          <div class="img-frame galerie__detail">
+            <Picture src={d.image} alt={d.alt} widths={[480, 800, 1200]} sizes="(min-width: 60rem) 58vw, 92vw" formats={['avif', 'webp']} />
+          </div>
+        ))
+      }
+    </div>
+
+    <div class="info">
+      <nav aria-label="Brotkrumen" class="krumen">
+        <a href="/moebel/">Möbel</a> <span aria-hidden="true">/</span> <span>{data.kategorie}</span>
+      </nav>
+      <p class="info__typ">{data.typ}</p>
+      <h1 class="display">{data.title}</h1>
+      <p class="info__preis">ab {euro(data.preisAb)} <span>inkl. MwSt., Lieferung und Montage</span></p>
+
+      <div class="prose info__text">
+        <Content />
+      </div>
+
+      <dl class="daten">
+        <div><dt>Hölzer</dt><dd>{data.hoelzer.join(', ')}</dd></div>
+        <div><dt>Maße</dt><dd>{data.masse}</dd></div>
+        <div><dt>Lieferzeit</dt><dd>{data.lieferzeit}</dd></div>
+        <div><dt>Gewährleistung</dt><dd>5 Jahre auf alle Tischlerarbeiten</dd></div>
+      </dl>
+
+      <div class="info__aktionen">
+        <a href={`/kontakt/?moebel=${encodeURIComponent(`${data.typ} ${data.title}`)}`} class="btn btn--primary">
+          {data.title} anfragen <Arrow />
+        </a>
+        <a href="/werkstatt/" class="btn btn--ghost">Ausstellung besuchen</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section tinted" aria-labelledby="verwandt">
+    <div class="container">
+      <h2 id="verwandt" class="h2 verwandt__titel">Das könnte auch passen</h2>
+      <div class="raster">
+        {verwandt.map((m) => <ProductCard produkt={m} />)}
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .produkt {
+    display: grid;
+    grid-template-columns: 1.35fr 1fr;
+    gap: clamp(2rem, 1rem + 4vw, 5rem);
+    align-items: start;
+    padding-top: clamp(2rem, 1rem + 3vw, 4rem);
+    padding-bottom: var(--section);
+  }
+  .galerie {
+    display: grid;
+    gap: 1rem;
+  }
+  .galerie__haupt {
+    aspect-ratio: 4 / 5;
+  }
+  .galerie__detail {
+    aspect-ratio: 3 / 2;
+  }
+  .info {
+    position: sticky;
+    top: 7rem;
+    display: grid;
+    gap: 1.25rem;
+  }
+  .krumen {
+    font-size: 0.85rem;
+    color: var(--ink-3);
+  }
+  .krumen a {
+    color: var(--oak-2);
+  }
+  .info__typ {
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--oak);
+    margin-top: 1rem;
+  }
+  .info h1 {
+    font-size: var(--step-5);
+  }
+  .info__preis {
+    font-size: var(--step-1);
+    font-weight: 500;
+  }
+  .info__preis span {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: var(--ink-3);
+  }
+  .info__text {
+    font-size: 1rem;
+  }
+  .daten {
+    margin: 0.5rem 0 0;
+    border-top: 1px solid var(--line);
+  }
+  .daten div {
+    display: grid;
+    grid-template-columns: 8.5rem 1fr;
+    gap: 1rem;
+    padding-block: 0.8rem;
+    border-bottom: 1px solid var(--line);
+    font-size: 0.95rem;
+  }
+  .daten dt {
+    color: var(--ink-3);
+  }
+  .daten dd {
+    margin: 0;
+  }
+  .info__aktionen {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+  }
+  .verwandt__titel {
+    margin-bottom: 3rem;
+  }
+  .raster {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3rem 2rem;
+  }
+  @media (max-width: 60rem) {
+    .produkt {
+      grid-template-columns: 1fr;
+    }
+    .info {
+      position: static;
+    }
+    .galerie__haupt {
+      aspect-ratio: 4 / 3;
+    }
+    .raster {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 40rem) {
+    .raster {
+      grid-template-columns: 1fr;
+    }
+    .daten div {
+      grid-template-columns: 1fr;
+      gap: 0.1rem;
+    }
+  }
+</style>

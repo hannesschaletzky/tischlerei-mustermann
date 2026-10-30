@@ -1,0 +1,180 @@
+---
+import Logo from './Logo.astro';
+import { firma, navigation, ersteller } from '../data/site';
+---
+
+<footer class="footer dark">
+  <div class="container">
+    <div class="footer__top">
+      <p class="footer__claim">
+        Wir bauen Möbel,<br /><em class="serif-italic">die bleiben.</em>
+      </p>
+      <a href="/kontakt/" class="btn btn--primary">Projekt anfragen</a>
+    </div>
+
+    <div class="footer__grid">
+      <div>
+        <Logo />
+        <p class="footer__muted">
+          Meisterbetrieb in zweiter Generation. Seit {firma.gruendung} bauen wir in {firma.ort} Möbel und
+          Innenausbau aus massivem Holz.
+        </p>
+      </div>
+
+      <div>
+        <h2 class="footer__title">Werkstatt</h2>
+        <address>
+          {firma.strasse}<br />
+          {`${firma.plz} ${firma.ort}`}<br />
+          <a href={firma.telefonHref}>{firma.telefon}</a><br />
+          <a href={`mailto:${firma.email}`}>{firma.email}</a>
+        </address>
+      </div>
+
+      <div>
+        <h2 class="footer__title">Öffnungszeiten</h2>
+        <dl>
+          {
+            firma.oeffnungszeiten.map((o) => (
+              <div>
+                <dt>{o.tage}</dt>
+                <dd>{o.zeit}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+
+      <nav aria-label="Fußnavigation">
+        <h2 class="footer__title">Seiten</h2>
+        <ul>
+          {
+            navigation.map((item) => (
+              <li>
+                <a href={item.href}>{item.label}</a>
+              </li>
+            ))
+          }
+          <li><a href="/kontakt/">Kontakt</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <div class="footer__bottom">
+      <p>© {new Date().getFullYear()} {firma.name} · Ein fiktives Unternehmen</p>
+      <ul>
+        <li><a href="/impressum/">Impressum</a></li>
+        <li><a href="/datenschutz/">Datenschutz</a></li>
+        <li><a href="/rss.xml">RSS</a></li>
+        <li>Website von <a href={ersteller.url}>{ersteller.name}</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    padding-top: var(--section);
+    padding-bottom: 2rem;
+  }
+  .footer__top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2rem;
+    padding-bottom: 4rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .footer__claim {
+    font-family: var(--font-display-stack);
+    font-size: var(--step-4);
+    line-height: 1;
+  }
+  .footer__claim em {
+    color: #e7c8a2;
+  }
+  .footer__grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr 0.8fr;
+    gap: 3rem 2rem;
+    padding-block: 4rem;
+  }
+  .footer__muted {
+    margin-top: 1.25rem;
+    color: var(--on-walnut-2);
+    max-width: 22rem;
+    font-size: 0.95rem;
+  }
+  .footer__title {
+    font-family: var(--font-body-stack);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--on-walnut-2);
+    margin-bottom: 1rem;
+  }
+  address {
+    font-style: normal;
+    font-size: 0.95rem;
+  }
+  a {
+    text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
+  }
+  a:hover {
+    text-decoration-color: currentColor;
+  }
+  dl {
+    margin: 0;
+    font-size: 0.95rem;
+  }
+  dl div + div {
+    margin-top: 0.6rem;
+  }
+  dt {
+    color: var(--on-walnut-2);
+    font-size: 0.85rem;
+  }
+  dd {
+    margin: 0;
+  }
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: 0.95rem;
+  }
+  li + li {
+    margin-top: 0.4rem;
+  }
+  .footer__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--line);
+    font-size: 0.85rem;
+    color: var(--on-walnut-2);
+  }
+  .footer__bottom ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    font-size: inherit;
+  }
+  .footer__bottom li + li {
+    margin-top: 0;
+  }
+  @media (max-width: 60rem) {
+    .footer__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (max-width: 34rem) {
+    .footer__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

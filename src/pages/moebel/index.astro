@@ -1,0 +1,114 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageIntro from '../../components/PageIntro.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import CallToAction from '../../components/CallToAction.astro';
+
+const moebel = (await getCollection('moebel')).sort((a, b) => a.data.order - b.data.order);
+const filter = [
+  { id: 'alle', label: 'Alle' },
+  { id: 'Tische', label: 'Tische' },
+  { id: 'Sitzen', label: 'Sitzen' },
+  { id: 'Aufbewahrung', label: 'Aufbewahrung' },
+];
+---
+
+<BaseLayout
+  title="Möbel"
+  description="Esstische, Sideboards, Regale und Sitzmöbel aus Massivholz. Die Entwürfe der Tischlerei Mustermann, gebaut in Ihren Maßen und aus Ihrem Holz."
+>
+  <PageIntro
+    eyebrow="Möbel"
+    title="Entwürfe, die wir <em>immer wieder</em> bauen"
+    lead="Jedes dieser Möbel ist ein Ausgangspunkt. Länge, Holz und Details passen wir an Ihren Raum an, oder wir entwerfen gemeinsam etwas ganz Neues."
+  />
+
+  <section class="container moebel" aria-label="Möbelübersicht">
+    <fieldset class="filter">
+      <legend class="visually-hidden">Nach Kategorie filtern</legend>
+      {
+        filter.map((f, i) => (
+          <label>
+            <input type="radio" name="kategorie" value={f.id} checked={i === 0} />
+            <span>{f.label}</span>
+          </label>
+        ))
+      }
+    </fieldset>
+
+    <div class="raster">
+      {moebel.map((m, i) => <ProductCard produkt={m} ebene="h2" eager={i === 0} />)}
+    </div>
+  </section>
+
+  <CallToAction
+    title="Nichts dabei? <em>Dann entwerfen wir es.</em>"
+    text="Die meisten unserer Möbel sind Einzelstücke, die es vorher nicht gab. Bringen Sie eine Skizze, ein Foto oder nur eine Idee mit."
+  />
+</BaseLayout>
+
+<style>
+  .moebel {
+    padding-bottom: var(--section);
+  }
+  .filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    border: 0;
+    margin: 0 0 3rem;
+    padding: 0;
+  }
+  .filter label {
+    position: relative;
+    cursor: pointer;
+  }
+  .filter input {
+    position: absolute;
+    opacity: 0;
+    inset: 0;
+    cursor: pointer;
+  }
+  .filter span {
+    display: inline-block;
+    padding: 0.6rem 1.15rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: background-color 0.25s var(--ease), color 0.25s var(--ease);
+  }
+  .filter label:hover span {
+    border-color: var(--ink);
+  }
+  .filter input:checked + span {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--paper);
+  }
+  .filter input:focus-visible + span {
+    outline: 2px solid var(--oak);
+    outline-offset: 3px;
+  }
+  .raster {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3.5rem 2rem;
+  }
+  .moebel:has(input[value='Tische']:checked) :global([data-kategorie]:not([data-kategorie='Tische'])),
+  .moebel:has(input[value='Sitzen']:checked) :global([data-kategorie]:not([data-kategorie='Sitzen'])),
+  .moebel:has(input[value='Aufbewahrung']:checked) :global([data-kategorie]:not([data-kategorie='Aufbewahrung'])) {
+    display: none;
+  }
+  @media (max-width: 60rem) {
+    .raster {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 40rem) {
+    .raster {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

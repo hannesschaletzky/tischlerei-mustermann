@@ -1,0 +1,25 @@
+---
+import TextLayout from '../layouts/TextLayout.astro';
+import { ersteller, firma } from '../data/site';
+---
+
+<TextLayout title="Impressum" description="Impressum der Beispielwebsite Tischlerei Mustermann.">
+  <p>
+    <strong>Diese Website ist ein Beispielprojekt.</strong> Die {firma.name}, ihre Mitarbeitenden, Adressen, Telefonnummern
+    und Produkte sind frei erfunden. Die Seite zeigt, wie eine moderne Website für einen Handwerksbetrieb aussehen kann.
+  </p>
+
+  <h2>Verantwortlich für diese Website</h2>
+  <p>
+    Gestaltung, Entwicklung und Betrieb: {ersteller.name}.<br />
+    Die vollständigen Angaben nach § 5 DDG finden Sie im{' '}
+    <a href={`${ersteller.url}/impressum`}>Impressum von hschaletzky.com</a>.
+  </p>
+
+  <h2>Bildnachweise</h2>
+  <p>
+    Alle Fotos stammen von <a href="https://unsplash.com">Unsplash</a> und werden unter der{' '}
+    <a href="https://unsplash.com/license">Unsplash-Lizenz</a> verwendet. Eine vollständige Liste der Fotografinnen und
+    Fotografen finden Sie in der <a href="/datenschutz/#bildnachweise">Übersicht der Bildnachweise</a>.
+  </p>
+</TextLayout>

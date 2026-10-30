@@ -1,0 +1,33 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Arrow from '../components/Arrow.astro';
+---
+
+<BaseLayout title="Seite nicht gefunden" description="Diese Seite gibt es leider nicht.">
+  <section class="container nf">
+    <span class="eyebrow">Fehler 404</span>
+    <h1 class="display">Hier ist nur <em>Sägemehl.</em></h1>
+    <p class="lead">Die Seite, die Sie suchen, gibt es nicht oder nicht mehr. Vielleicht hilft einer dieser Wege weiter.</p>
+    <div class="aktionen">
+      <a href="/" class="btn btn--primary">Zur Startseite <Arrow /></a>
+      <a href="/moebel/" class="btn btn--ghost">Möbel ansehen</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .nf {
+    display: grid;
+    gap: 1.75rem;
+    justify-items: start;
+    padding-block: clamp(5rem, 3rem + 8vw, 10rem);
+  }
+  h1 em {
+    color: var(--oak);
+  }
+  .aktionen {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+</style>

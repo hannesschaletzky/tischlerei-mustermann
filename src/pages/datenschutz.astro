@@ -1,0 +1,43 @@
+---
+import TextLayout from '../layouts/TextLayout.astro';
+import { bildnachweise, ersteller } from '../data/site';
+---
+
+<TextLayout title="Datenschutz" description="Datenschutzhinweise der Beispielwebsite Tischlerei Mustermann.">
+  <p>
+    Diese Beispielwebsite wurde so gebaut, dass sie möglichst wenige Daten verarbeitet. Es gibt keine Cookies, kein
+    Tracking, keine Analysewerkzeuge und keine eingebundenen Inhalte von Drittanbietern. Schriften und Bilder werden vom
+    eigenen Server ausgeliefert.
+  </p>
+
+  <h2>Verantwortlicher</h2>
+  <p>
+    Verantwortlich ist {ersteller.name}. Kontaktdaten und weitere Angaben finden Sie in der{' '}
+    <a href={`${ersteller.url}/datenschutz`}>Datenschutzerklärung von hschaletzky.com</a>.
+  </p>
+
+  <h2>Server-Logdateien</h2>
+  <p>
+    Beim Aufruf der Seite verarbeitet der Webserver technisch notwendige Daten (IP-Adresse, Zeitpunkt, aufgerufene
+    Adresse, Browserkennung), um die Seite auszuliefern und Angriffe abzuwehren (Art. 6 Abs. 1 lit. f DSGVO). Die Logdateien
+    werden nach spätestens 14 Tagen gelöscht. Der Server steht in einem Rechenzentrum der Hetzner Online GmbH in Deutschland.
+  </p>
+
+  <h2>Kontaktformular</h2>
+  <p>
+    Das Kontaktformular dient nur der Demonstration. Eingaben bleiben in Ihrem Browser und werden nicht übertragen oder
+    gespeichert.
+  </p>
+
+  <h2 id="bildnachweise">Bildnachweise</h2>
+  <p>Fotos von Unsplash, verwendet unter der Unsplash-Lizenz:</p>
+  <ul>
+    {
+      bildnachweise.map(([name, id]) => (
+        <li>
+          <a href={`https://unsplash.com/photos/${id}`}>{name}</a>
+        </li>
+      ))
+    }
+  </ul>
+</TextLayout>

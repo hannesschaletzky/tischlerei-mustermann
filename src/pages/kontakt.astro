@@ -1,0 +1,337 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageIntro from '../components/PageIntro.astro';
+import Arrow from '../components/Arrow.astro';
+import { firma } from '../data/site';
+
+const leistungen = (await getCollection('leistungen')).sort((a, b) => a.data.order - b.data.order);
+---
+
+<BaseLayout
+  title="Kontakt"
+  description="Projekt anfragen bei der Tischlerei Mustermann: Telefon, E-Mail, Anfahrt und Öffnungszeiten. Das erste Beratungsgespräch ist kostenlos."
+>
+  <PageIntro
+    eyebrow="Kontakt"
+    title="Lassen Sie uns <em>reden.</em>"
+    lead="Erzählen Sie uns kurz, was Sie vorhaben. Wir melden uns innerhalb von zwei Werktagen und vereinbaren einen Termin, in der Werkstatt oder bei Ihnen."
+  />
+
+  <div class="container kontakt">
+    <form class="formular" id="anfrage" method="post" novalidate>
+      <div class="feld">
+        <label for="name">Name <span aria-hidden="true">*</span></label>
+        <input id="name" name="name" type="text" autocomplete="name" required />
+      </div>
+      <div class="feld feld--halb">
+        <label for="email">E-Mail <span aria-hidden="true">*</span></label>
+        <input id="email" name="email" type="email" autocomplete="email" required />
+      </div>
+      <div class="feld feld--halb">
+        <label for="telefon">Telefon <span class="optional">(optional)</span></label>
+        <input id="telefon" name="telefon" type="tel" autocomplete="tel" />
+      </div>
+      <fieldset class="feld">
+        <legend>Worum geht es?</legend>
+        <div class="chips">
+          {
+            leistungen.map((l, i) => (
+              <label class="chip">
+                <input type="radio" name="thema" value={l.data.title} checked={i === 0} />
+                <span>{l.data.title}</span>
+              </label>
+            ))
+          }
+          <label class="chip">
+            <input type="radio" name="thema" value="Etwas anderes" />
+            <span>Etwas anderes</span>
+          </label>
+        </div>
+      </fieldset>
+      <div class="feld">
+        <label for="nachricht">Ihr Vorhaben <span aria-hidden="true">*</span></label>
+        <textarea id="nachricht" name="nachricht" rows="6" required placeholder="Was möchten Sie bauen lassen? Maße, Holz, Zeitrahmen – alles hilft."
+        ></textarea>
+      </div>
+      <div class="feld">
+        <label class="check">
+          <input type="checkbox" name="datenschutz" required />
+          <span>Ich bin einverstanden, dass meine Angaben zur Bearbeitung der Anfrage gespeichert werden. Mehr dazu in der <a href="/datenschutz/">Datenschutzerklärung</a>. <span aria-hidden="true">*</span></span>
+        </label>
+      </div>
+      <div class="feld absenden">
+        <button type="submit" class="btn btn--primary">Anfrage senden <Arrow /></button>
+        <p class="hinweis">Beispielseite: Das Formular verschickt keine Daten.</p>
+      </div>
+      <p class="meldung" role="status" aria-live="polite" hidden></p>
+    </form>
+
+    <aside class="seite">
+      <div class="block">
+        <h2 class="block__titel">Direkt</h2>
+        <a class="gross" href={firma.telefonHref}>{firma.telefon}</a>
+        <a class="gross" href={`mailto:${firma.email}`}>{firma.email}</a>
+      </div>
+      <div class="block">
+        <h2 class="block__titel">Werkstatt &amp; Ausstellung</h2>
+        <address>
+          {firma.name}<br />
+          {firma.strasse}<br />
+          {`${firma.plz} ${firma.ort}`}
+        </address>
+        <p class="klein">Parkplätze direkt vor der Werkstatt. Mit dem Bus: Linie 7 bis Haltestelle Sägewerk.</p>
+      </div>
+      <div class="block">
+        <h2 class="block__titel">Öffnungszeiten</h2>
+        <dl>
+          {
+            firma.oeffnungszeiten.map((o) => (
+              <div>
+                <dt>{o.tage}</dt>
+                <dd>{o.zeit}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+    </aside>
+  </div>
+  <script>
+    const form = document.querySelector<HTMLFormElement>('#anfrage');
+    const meldung = form?.querySelector<HTMLParagraphElement>('.meldung');
+  
+    const moebel = new URLSearchParams(location.search).get('moebel');
+    const nachricht = form?.querySelector<HTMLTextAreaElement>('#nachricht');
+    if (moebel && nachricht && !nachricht.value) {
+      nachricht.value = `Ich interessiere mich für ${moebel.slice(0, 80)}.\n\n`;
+      form?.querySelector<HTMLInputElement>('input[name="thema"][value="Möbel nach Maß"]')?.click();
+    }
+  
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      if (!meldung) return;
+      form.classList.add('geprueft');
+      if (!form.checkValidity()) {
+        meldung.hidden = false;
+        meldung.dataset.art = 'fehler';
+        meldung.textContent = 'Bitte füllen Sie alle Pflichtfelder aus.';
+        form.querySelector<HTMLElement>(':invalid')?.focus();
+        return;
+      }
+      meldung.hidden = false;
+      meldung.dataset.art = 'ok';
+      meldung.textContent =
+        'Vielen Dank! Auf einer echten Website wäre Ihre Anfrage jetzt bei uns angekommen. Dies ist ein Beispielprojekt, es wurden keine Daten übertragen.';
+      form.reset();
+      form.classList.remove('geprueft');
+    });
+  </script>
+</BaseLayout>
+
+
+<style>
+  .kontakt {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: clamp(3rem, 2rem + 5vw, 7rem);
+    padding-bottom: var(--section);
+    align-items: start;
+  }
+  .formular {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.75rem 1.25rem;
+  }
+  .feld {
+    grid-column: 1 / -1;
+    display: grid;
+    gap: 0.5rem;
+    border: 0;
+    margin: 0;
+    padding: 0;
+    min-width: 0;
+  }
+  .feld--halb {
+    grid-column: span 1;
+  }
+  label,
+  legend {
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+  legend {
+    margin-bottom: 0.75rem;
+    padding: 0;
+  }
+  .optional {
+    font-weight: 400;
+    color: var(--ink-3);
+  }
+  input[type='text'],
+  input[type='email'],
+  input[type='tel'],
+  textarea {
+    width: 100%;
+    font: inherit;
+    color: inherit;
+    padding: 0.9rem 1rem;
+    background: #fbf8f3;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+  }
+  input:focus,
+  textarea:focus {
+    outline: none;
+    border-color: var(--oak);
+    box-shadow: 0 0 0 3px rgb(140 79 28 / 0.18);
+  }
+  textarea {
+    resize: vertical;
+    min-height: 9rem;
+  }
+  .geprueft :invalid {
+    border-color: #a3341f;
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .chip {
+    position: relative;
+    font-weight: 500;
+  }
+  .chip input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+  .chip span {
+    display: inline-block;
+    padding: 0.55rem 1rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-size: 0.9rem;
+  }
+  .chip:hover span {
+    border-color: var(--ink);
+  }
+  .chip input:checked + span {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--paper);
+  }
+  .chip input:focus-visible + span {
+    outline: 2px solid var(--oak);
+    outline-offset: 3px;
+  }
+  .check {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.75rem;
+    font-weight: 400;
+    color: var(--ink-2);
+    align-items: start;
+  }
+  .check input {
+    width: 1.15rem;
+    height: 1.15rem;
+    margin-top: 0.2rem;
+    accent-color: var(--oak);
+  }
+  .check a {
+    color: var(--oak-2);
+  }
+  .absenden {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.5rem;
+  }
+  .hinweis {
+    font-size: 0.85rem;
+    color: var(--ink-3);
+  }
+  .meldung {
+    grid-column: 1 / -1;
+    padding: 1rem 1.25rem;
+    border-radius: var(--radius);
+    background: #e6efdf;
+    color: #2d4a22;
+  }
+  .meldung[data-art='fehler'] {
+    background: #f6e0d9;
+    color: #7d2513;
+  }
+  .seite {
+    display: grid;
+    gap: 2.5rem;
+    position: sticky;
+    top: 7rem;
+  }
+  .block {
+    display: grid;
+    gap: 0.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line);
+  }
+  .block__titel {
+    font-family: var(--font-body-stack);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 0.5rem;
+  }
+  .gross {
+    font-family: var(--font-display-stack);
+    font-size: var(--step-2);
+    line-height: 1.2;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+  }
+  .gross:hover {
+    color: var(--oak-2);
+  }
+  address {
+    font-style: normal;
+  }
+  .klein {
+    font-size: 0.9rem;
+    color: var(--ink-2);
+  }
+  dl {
+    margin: 0;
+  }
+  dl div {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-block: 0.4rem;
+    font-size: 0.95rem;
+  }
+  dt {
+    color: var(--ink-2);
+  }
+  dd {
+    margin: 0;
+    text-align: right;
+  }
+  @media (max-width: 60rem) {
+    .kontakt {
+      grid-template-columns: 1fr;
+    }
+    .seite {
+      position: static;
+    }
+  }
+  @media (max-width: 34rem) {
+    .feld--halb {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

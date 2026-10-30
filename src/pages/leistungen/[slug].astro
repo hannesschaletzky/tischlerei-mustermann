@@ -1,0 +1,185 @@
+---
+import { Picture } from 'astro:assets';
+import { getCollection, render } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Arrow from '../../components/Arrow.astro';
+import CallToAction from '../../components/CallToAction.astro';
+
+export const getStaticPaths = (async () => {
+  const leistungen = await getCollection('leistungen');
+  return leistungen.map((leistung) => ({ params: { slug: leistung.id }, props: { leistung } }));
+}) satisfies GetStaticPaths;
+
+const { leistung } = Astro.props;
+const { Content } = await render(leistung);
+const andere = (await getCollection('leistungen'))
+  .filter((l) => l.id !== leistung.id)
+  .sort((a, b) => a.data.order - b.data.order);
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  name: leistung.data.title,
+  description: leistung.data.description,
+  provider: { '@id': `${Astro.site}#betrieb` },
+  areaServed: 'Musterstadt und Umgebung',
+};
+---
+
+<BaseLayout title={leistung.data.title} description={leistung.data.description} image={leistung.data.image} jsonLd={jsonLd} krumen={[{ name: 'Leistungen', href: '/leistungen/' }]}>
+  <section class="kopf container">
+    <nav aria-label="Brotkrumen" class="krumen">
+      <a href="/leistungen/">Leistungen</a> <span aria-hidden="true">/</span> <span aria-current="page">{leistung.data.title}</span>
+    </nav>
+    <h1 class="display">{leistung.data.title}</h1>
+    <p class="lead">{leistung.data.kurz}</p>
+  </section>
+
+  <div class="container">
+    <div class="img-frame titelbild">
+      <Picture
+        src={leistung.data.image}
+        alt={leistung.data.imageAlt}
+        widths={[800, 1300, 1900, 2400]}
+        sizes="(min-width: 80rem) 75rem, 95vw"
+        formats={['avif', 'webp']}
+        loading="eager"
+        fetchpriority="high"
+      />
+    </div>
+  </div>
+
+  <div class="section container inhalt">
+    <div class="prose">
+      <Content />
+    </div>
+    <aside class="box">
+      <h2 class="box__titel">Auf einen Blick</h2>
+      <ul>
+        {leistung.data.highlights.map((h) => <li>{h}</li>)}
+      </ul>
+      <a href="/kontakt/" class="btn btn--primary">Beratung anfragen <Arrow /></a>
+    </aside>
+  </div>
+
+  <section class="section--tight tinted" aria-labelledby="weitere">
+    <div class="container">
+      <h2 id="weitere" class="h3 weitere__titel">Weitere Leistungen</h2>
+      <ul class="weitere">
+        {
+          andere.map((l) => (
+            <li>
+              <a href={`/leistungen/${l.id}/`}>
+                {l.data.title} <Arrow />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <CallToAction />
+</BaseLayout>
+
+<style>
+  .kopf {
+    display: grid;
+    gap: 1.5rem;
+    padding-top: clamp(3rem, 2rem + 4vw, 6rem);
+    padding-bottom: clamp(2rem, 1rem + 3vw, 4rem);
+  }
+  .krumen {
+    font-size: 0.85rem;
+    color: var(--ink-3);
+  }
+  .krumen a {
+    color: var(--oak-2);
+  }
+  .titelbild {
+    aspect-ratio: 21 / 9;
+  }
+  .inhalt {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 22rem;
+    gap: clamp(2rem, 1rem + 5vw, 6rem);
+    align-items: start;
+  }
+  .box {
+    position: sticky;
+    top: 7rem;
+    display: grid;
+    gap: 1.25rem;
+    padding: 2rem;
+    background: var(--paper-2);
+    border-radius: var(--radius);
+  }
+  .box__titel {
+    font-size: var(--step-2);
+  }
+  .box ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: 0.95rem;
+  }
+  .box li {
+    padding: 0.65rem 0 0.65rem 1.5rem;
+    border-top: 1px solid var(--line);
+    position: relative;
+  }
+  .box li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 1.15rem;
+    width: 0.6rem;
+    height: 1px;
+    background: var(--oak);
+  }
+  .box .btn {
+    justify-self: start;
+  }
+  .weitere__titel {
+    margin-bottom: 1.5rem;
+  }
+  .weitere {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .weitere a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.8rem 1.25rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.25s var(--ease), color 0.25s var(--ease);
+  }
+  .weitere a :global(svg) {
+    width: 0.9rem;
+  }
+  .weitere a:hover {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+  @media (max-width: 60rem) {
+    .titelbild {
+      aspect-ratio: 4 / 3;
+    }
+    .inhalt {
+      grid-template-columns: 1fr;
+    }
+    .box {
+      position: static;
+    }
+  }
+</style>

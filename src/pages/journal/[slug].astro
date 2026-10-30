@@ -1,0 +1,162 @@
+---
+import { Picture } from 'astro:assets';
+import { getCollection, render } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import CallToAction from '../../components/CallToAction.astro';
+import { datum, firma } from '../../data/site';
+
+export const getStaticPaths = (async () => {
+  const beitraege = await getCollection('journal');
+  return beitraege.map((beitrag) => ({ params: { slug: beitrag.id }, props: { beitrag } }));
+}) satisfies GetStaticPaths;
+
+const { beitrag } = Astro.props;
+const { data } = beitrag;
+const { Content } = await render(beitrag);
+
+const woerter = (beitrag.body ?? '').split(/\s+/).length;
+const lesezeit = Math.max(1, Math.round(woerter / 200));
+
+const weitere = (await getCollection('journal'))
+  .filter((b) => b.id !== beitrag.id)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 2);
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: data.title,
+  description: data.description,
+  datePublished: data.date.toISOString(),
+  author: { '@type': 'Person', name: data.autor },
+  publisher: { '@id': `${Astro.site}#betrieb` },
+  mainEntityOfPage: new URL(Astro.url.pathname, Astro.site).toString(),
+};
+---
+
+<BaseLayout title={data.title} description={data.description} image={data.image} type="article" jsonLd={jsonLd} krumen={[{ name: 'Journal', href: '/journal/' }]}>
+  <article>
+    <header class="container kopf">
+      <nav aria-label="Brotkrumen" class="krumen">
+        <a href="/journal/">Journal</a> <span aria-hidden="true">/</span> <span>{data.kategorie}</span>
+      </nav>
+      <h1 class="kopf__titel">{data.title}</h1>
+      <p class="lead">{data.description}</p>
+      <p class="meta">
+        <span>{data.autor}</span>
+        <time datetime={data.date.toISOString()}>{datum(data.date)}</time>
+        <span>{lesezeit} Min. Lesezeit</span>
+      </p>
+    </header>
+
+    <div class="container">
+      <div class="img-frame titelbild">
+        <Picture
+          src={data.image}
+          alt={data.imageAlt}
+          widths={[800, 1300, 1900, 2400]}
+          sizes="(min-width: 80rem) 75rem, 95vw"
+          formats={['avif', 'webp']}
+          loading="eager"
+          fetchpriority="high"
+        />
+      </div>
+    </div>
+
+    <div class="section container text">
+      <div class="prose">
+        <Content />
+      </div>
+      <footer class="autor">
+        <p>
+          Geschrieben von <strong>{data.autor}</strong>, {firma.name}. Fragen zum Thema? Schreiben Sie uns an{' '}
+          <a href={`mailto:${firma.email}`}>{firma.email}</a>.
+        </p>
+      </footer>
+    </div>
+  </article>
+
+  <section class="section tinted" aria-labelledby="weiterlesen">
+    <div class="container">
+      <h2 id="weiterlesen" class="h2 weiter__titel">Weiterlesen</h2>
+      <div class="raster">
+        {weitere.map((b) => <PostCard beitrag={b} />)}
+      </div>
+    </div>
+  </section>
+
+  <CallToAction />
+</BaseLayout>
+
+<style>
+  .kopf {
+    display: grid;
+    gap: 1.5rem;
+    max-width: 62rem;
+    padding-top: clamp(3rem, 2rem + 4vw, 6rem);
+    padding-bottom: clamp(2rem, 1rem + 3vw, 4rem);
+  }
+  .krumen {
+    font-size: 0.85rem;
+    color: var(--ink-3);
+  }
+  .krumen a {
+    color: var(--oak-2);
+  }
+  .kopf__titel {
+    font-size: var(--step-4);
+  }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    font-size: 0.9rem;
+    color: var(--ink-3);
+  }
+  .meta span:first-child {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .titelbild {
+    aspect-ratio: 21 / 9;
+  }
+  .text {
+    display: grid;
+    justify-items: center;
+  }
+  .text .prose {
+    width: 100%;
+  }
+  .autor {
+    width: 100%;
+    max-width: 40rem;
+    margin-top: 3.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line);
+    font-size: 0.95rem;
+    color: var(--ink-2);
+  }
+  .autor a {
+    color: var(--oak-2);
+  }
+  .weiter__titel {
+    margin-bottom: 3rem;
+  }
+  .raster {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 3rem 2.5rem;
+  }
+  @media (max-width: 60rem) {
+    .titelbild {
+      aspect-ratio: 3 / 2;
+    }
+  }
+  @media (max-width: 40rem) {
+    .raster {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,27 @@
+---
+import { ersteller } from '../data/site';
+---
+
+<aside class="demobar" aria-label="Hinweis zum Beispielprojekt">
+  <p class="container">
+    Beispielprojekt: Die Tischlerei ist erfunden. Website gestaltet und entwickelt von{' '}
+    <a href={ersteller.url}>{ersteller.name}</a>
+  </p>
+</aside>
+
+<style>
+  .demobar {
+    background: var(--walnut);
+    color: var(--on-walnut-2);
+    font-size: 0.8rem;
+    letter-spacing: 0.02em;
+  }
+  p {
+    padding-block: 0.55rem;
+    text-align: center;
+  }
+  a {
+    color: var(--on-walnut);
+    font-weight: 600;
+  }
+</style>

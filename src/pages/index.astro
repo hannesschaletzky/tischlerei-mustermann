@@ -1,0 +1,541 @@
+---
+import { Picture } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Arrow from '../components/Arrow.astro';
+import ProductCard from '../components/ProductCard.astro';
+import PostCard from '../components/PostCard.astro';
+import CallToAction from '../components/CallToAction.astro';
+import { firma } from '../data/site';
+
+import heroBild from '../assets/images/werkbank-sonne.jpg';
+import detailBild from '../assets/images/stechbeitel.jpg';
+import hobelBild from '../assets/images/hobeln.jpg';
+import ablaufBild from '../assets/images/werkzeugwand.jpg';
+
+const leistungen = (await getCollection('leistungen')).sort((a, b) => a.data.order - b.data.order);
+const moebel = (await getCollection('moebel'))
+  .filter((m) => m.data.featured)
+  .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, 3);
+const beitraege = (await getCollection('journal')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()).slice(0, 3);
+
+const jahre = new Date().getFullYear() - firma.gruendung;
+
+const ablauf = [
+  { titel: 'Gespräch', text: 'Wir hören zu, messen auf und klären, was Sie brauchen. Bei Ihnen zu Hause oder in der Werkstatt, kostenlos.' },
+  { titel: 'Entwurf', text: 'Sie bekommen Skizzen, eine 3D-Ansicht und Holzmuster. Wir überarbeiten den Entwurf, bis er wirklich passt.' },
+  { titel: 'Werkstatt', text: 'Wir bauen Ihr Möbel von Hand und mit modernen Maschinen. Gern zeigen wir Ihnen zwischendurch den Stand.' },
+  { titel: 'Montage', text: 'Wir liefern selbst, bauen auf und richten aus. Danach bekommen Sie Pflegehinweise und fünf Jahre Gewährleistung.' },
+];
+---
+
+<BaseLayout
+  title={firma.name}
+  description="Tischlerei Mustermann in Musterstadt: Massivholzmöbel nach Maß, Küchen, Einbauschränke, Treppen und Restaurierung. Meisterbetrieb seit 1987."
+>
+  <section class="hero container">
+    <div class="hero__text">
+      <span class="eyebrow">Meisterbetrieb seit {firma.gruendung} · {firma.ort}</span>
+      <h1 class="display">Möbel, <em>die bleiben.</em></h1>
+      <p class="lead">
+        Wir entwerfen und bauen Möbel, Küchen und Einbauten aus massivem Holz, so genau, dass sie in Ihren Raum passen,
+        und so solide, dass sie Ihre Kinder noch erben.
+      </p>
+      <div class="hero__aktionen">
+        <a href="/kontakt/" class="btn btn--primary">Projekt anfragen <Arrow /></a>
+        <a href="/moebel/" class="btn btn--ghost">Möbel ansehen</a>
+      </div>
+    </div>
+
+    <figure class="hero__bild">
+      <div class="img-frame">
+        <Picture
+          src={heroBild}
+          alt="Sonnendurchflutete Werkbank mit Hobeln, Stechbeiteln und Holzstücken vor einem Sprossenfenster"
+          widths={[640, 960, 1280, 1700]}
+          sizes="(min-width: 60rem) 52vw, 92vw"
+          formats={['avif', 'webp']}
+          loading="eager"
+          fetchpriority="high"
+        />
+      </div>
+      <figcaption class="hero__notiz">
+        <span class="hero__punkt" aria-hidden="true"></span>
+        <span><strong>Gerade auf der Werkbank:</strong> Esstisch Lindenhof, Eiche, 2,60 m</span>
+      </figcaption>
+    </figure>
+  </section>
+
+  <div class="container zahlen">
+    <dl aria-label="Die Tischlerei in Zahlen">
+      <div><dt>Jahre Handwerk</dt><dd>{jahre}</dd></div>
+      <div><dt>Menschen in der Werkstatt</dt><dd>9</dd></div>
+      <div><dt>Möbel pro Jahr</dt><dd>~180</dd></div>
+      <div><dt>km bis zum Sägewerk</dt><dd>&lt;150</dd></div>
+    </dl>
+  </div>
+
+  <section class="section container haltung">
+    <div class="haltung__text reveal">
+      <h2 class="eyebrow">Unsere Haltung</h2>
+      <p class="haltung__satz">
+        Ein gutes Möbel braucht <em>Zeit</em>, ehrliches Holz und jemanden, der weiß, was er tut. Wir bauen lieber ein
+        Stück richtig als zehn schnell.
+      </p>
+      <a href="/werkstatt/" class="link-arrow">Die Werkstatt kennenlernen <Arrow /></a>
+    </div>
+    <div class="haltung__bilder">
+      <div class="img-frame haltung__b1 reveal">
+        <Picture src={detailBild} alt="Hand führt einen Stechbeitel durch helles Holz, Späne liegen auf dem Brett" widths={[480, 800, 1100]} sizes="(min-width: 60rem) 28vw, 60vw" formats={['avif', 'webp']} />
+      </div>
+      <div class="img-frame haltung__b2 reveal">
+        <Picture src={hobelBild} alt="Tischler mit Lederschürze hobelt ein Brett an der Werkbank" widths={[400, 700, 900]} sizes="(min-width: 60rem) 20vw, 45vw" formats={['avif', 'webp']} />
+      </div>
+    </div>
+  </section>
+
+  <section class="section tinted" aria-labelledby="leistungen-titel">
+    <div class="container">
+      <div class="kopf">
+        <div>
+          <span class="eyebrow">Leistungen</span>
+          <h2 id="leistungen-titel" class="h2">Was wir für Sie bauen</h2>
+        </div>
+        <a href="/leistungen/" class="link-arrow">Alle Leistungen <Arrow /></a>
+      </div>
+
+      <ol class="leistungen">
+        {
+          leistungen.map((l, i) => (
+            <li class="reveal">
+              <a href={`/leistungen/${l.id}/`} class="leistung">
+                <span class="leistung__nr">{String(i + 1).padStart(2, '0')}</span>
+                <span class="leistung__titel">{l.data.title}</span>
+                <span class="leistung__kurz">{l.data.kurz}</span>
+                <span class="img-frame leistung__bild">
+                  <Picture src={l.data.image} alt="" widths={[240, 400]} sizes="12rem" formats={['avif', 'webp']} />
+                </span>
+                <span class="leistung__pfeil"><Arrow /></span>
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="section container" aria-labelledby="moebel-titel">
+    <div class="kopf">
+      <div>
+        <span class="eyebrow">Aus der Werkstatt</span>
+        <h2 id="moebel-titel" class="h2">Möbel mit Namen</h2>
+      </div>
+      <p class="kopf__text">
+        Diese Entwürfe bauen wir immer wieder, jedes Mal in Ihren Maßen und aus Ihrem Holz.
+      </p>
+    </div>
+    <div class="moebel-raster">
+      {moebel.map((m) => <ProductCard produkt={m} />)}
+    </div>
+    <div class="mehr">
+      <a href="/moebel/" class="btn btn--ghost">Alle Möbel ansehen <Arrow /></a>
+    </div>
+  </section>
+
+  <section class="section dark ablauf" aria-labelledby="ablauf-titel">
+    <div class="container ablauf__raster">
+      <div class="ablauf__kopf">
+        <span class="eyebrow">So arbeiten wir</span>
+        <h2 id="ablauf-titel" class="h2">Vom ersten Gespräch bis zur <em>Montage</em></h2>
+        <div class="img-frame ablauf__bild">
+          <Picture src={ablaufBild} alt="Hobel, Stechbeitel und Winkel ordentlich an einer dunklen Werkstattwand aufgehängt" widths={[480, 800, 1100]} sizes="(min-width: 60rem) 38vw, 92vw" formats={['avif', 'webp']} />
+        </div>
+      </div>
+      <ol class="schritte">
+        {
+          ablauf.map((s, i) => (
+            <li class="reveal">
+              <span class="schritt__nr serif-nums">{i + 1}</span>
+              <h3 class="h3">{s.titel}</h3>
+              <p>{s.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="section container stimme" aria-label="Kundenstimme">
+    <figure class="reveal">
+      <blockquote>
+        <p>
+          „Wir hatten eine Nische unter der Treppe, mit der niemand etwas anfangen konnte. Heute ist da der schönste
+          Schrank im ganzen Haus, und jedes Fach hat einen Zweck.“
+        </p>
+      </blockquote>
+      <figcaption>
+        <strong>Familie Beispiel</strong>
+        <span>Einbauschrank unter der Treppe, Eiche geölt</span>
+      </figcaption>
+    </figure>
+  </section>
+
+  <section class="section tinted" aria-labelledby="journal-titel">
+    <div class="container">
+      <div class="kopf">
+        <div>
+          <span class="eyebrow">Journal</span>
+          <h2 id="journal-titel" class="h2">Wissen aus der Werkstatt</h2>
+        </div>
+        <a href="/journal/" class="link-arrow">Alle Beiträge <Arrow /></a>
+      </div>
+      <div class="journal-raster">
+        {beitraege.map((b) => <PostCard beitrag={b} />)}
+      </div>
+    </div>
+  </section>
+
+  <CallToAction />
+</BaseLayout>
+
+<style>
+  .hero {
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: clamp(2rem, 1rem + 4vw, 5rem);
+    align-items: center;
+    padding-top: clamp(2.5rem, 1rem + 5vw, 5.5rem);
+    padding-bottom: clamp(3rem, 1rem + 4vw, 5rem);
+  }
+  .hero__text {
+    display: grid;
+    gap: 1.75rem;
+    justify-items: start;
+  }
+  .hero h1 em {
+    display: block;
+    color: var(--oak);
+  }
+  .hero__aktionen {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+  }
+  .hero__bild {
+    position: relative;
+    margin: 0;
+  }
+  .hero__bild .img-frame {
+    aspect-ratio: 4 / 5;
+    max-height: 78vh;
+    width: 100%;
+  }
+  .hero__notiz {
+    position: absolute;
+    left: clamp(-2.5rem, -2vw, -1rem);
+    bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    max-width: 19rem;
+    padding: 1rem 1.25rem;
+    background: var(--paper);
+    border-radius: var(--radius);
+    box-shadow: 0 20px 40px -20px rgb(30 25 20 / 0.35);
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+  .hero__notiz strong {
+    display: block;
+    font-weight: 600;
+  }
+  .hero__punkt {
+    flex: none;
+    width: 0.6rem;
+    height: 0.6rem;
+    border-radius: 50%;
+    background: #4f7a3f;
+    box-shadow: 0 0 0 4px rgb(79 122 63 / 0.2);
+  }
+
+  .zahlen dl {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    margin: 0;
+    border-top: 1px solid var(--line);
+  }
+  .zahlen div {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: flex-end;
+    gap: 0.25rem;
+    padding: 1.75rem 1.5rem 0 0;
+  }
+  .zahlen div + div {
+    padding-left: 1.5rem;
+    border-left: 1px solid var(--line);
+  }
+  .zahlen dd {
+    margin: 0;
+    font-family: var(--font-display-stack);
+    font-size: var(--step-4);
+    line-height: 1;
+  }
+  .zahlen dt {
+    font-size: 0.85rem;
+    color: var(--ink-3);
+  }
+
+  .haltung {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(2rem, 1rem + 5vw, 6rem);
+    align-items: center;
+  }
+  .haltung__text {
+    display: grid;
+    gap: 2rem;
+    justify-items: start;
+  }
+  .haltung__satz {
+    font-family: var(--font-display-stack);
+    font-size: var(--step-3);
+    line-height: 1.15;
+  }
+  .haltung__satz em {
+    color: var(--oak);
+  }
+  .haltung__bilder {
+    position: relative;
+    padding-bottom: 18%;
+  }
+  .haltung__b1 {
+    aspect-ratio: 4 / 5;
+    width: 78%;
+  }
+  .haltung__b2 {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 48%;
+    aspect-ratio: 1;
+    border: 0.6rem solid var(--paper);
+    box-sizing: content-box;
+  }
+
+  .kopf {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1.5rem 3rem;
+    margin-bottom: clamp(2.5rem, 1.5rem + 3vw, 4.5rem);
+  }
+  .kopf > div {
+    display: grid;
+    gap: 1rem;
+  }
+  .kopf__text {
+    max-width: 24rem;
+    color: var(--ink-2);
+  }
+
+  .leistungen {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--line);
+  }
+  .leistungen li {
+    border-bottom: 1px solid var(--line);
+  }
+  .leistung {
+    display: grid;
+    grid-template-columns: 3rem minmax(0, 1.1fr) minmax(0, 1.4fr) 8rem 2rem;
+    gap: 2rem;
+    align-items: center;
+    padding-block: 1.5rem;
+    text-decoration: none;
+  }
+  .leistung__nr {
+    font-size: 0.85rem;
+    color: var(--ink-3);
+    font-variant-numeric: tabular-nums;
+  }
+  .leistung__titel {
+    font-family: var(--font-display-stack);
+    font-size: var(--step-3);
+    line-height: 1;
+    transition: transform 0.4s var(--ease);
+  }
+  .leistung__kurz {
+    color: var(--ink-2);
+    font-size: 0.95rem;
+  }
+  .leistung__bild {
+    aspect-ratio: 4 / 3;
+    opacity: 0.85;
+    transition: opacity 0.4s var(--ease);
+  }
+  .leistung__pfeil {
+    justify-self: end;
+    width: 1.2rem;
+    transition: transform 0.4s var(--ease);
+  }
+  .leistung:hover .leistung__titel {
+    transform: translateX(0.5rem);
+    font-style: italic;
+  }
+  .leistung:hover .leistung__bild {
+    opacity: 1;
+  }
+  .leistung:hover .leistung__pfeil {
+    transform: translateX(0.3rem);
+    color: var(--oak);
+  }
+
+  .moebel-raster,
+  .journal-raster {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3rem 2rem;
+  }
+  .mehr {
+    display: flex;
+    justify-content: center;
+    margin-top: 4rem;
+  }
+
+  .ablauf__raster {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(3rem, 2rem + 5vw, 7rem);
+  }
+  .ablauf__kopf {
+    display: grid;
+    gap: 1.5rem;
+    align-content: start;
+  }
+  .ablauf__kopf h2 em {
+    color: #e7c8a2;
+  }
+  .ablauf__bild {
+    aspect-ratio: 5 / 4;
+    margin-top: 1.5rem;
+  }
+  .schritte {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    counter-reset: schritt;
+  }
+  .schritte li {
+    display: grid;
+    grid-template-columns: 3.5rem 1fr;
+    gap: 0.5rem 1rem;
+    padding-block: 2.25rem;
+    border-top: 1px solid var(--line);
+  }
+  .schritte li:last-child {
+    border-bottom: 1px solid var(--line);
+  }
+  .schritt__nr {
+    grid-row: span 2;
+    font-family: var(--font-display-stack);
+    font-size: var(--step-3);
+    line-height: 1;
+    color: #d9a56f;
+  }
+  .schritte p {
+    color: var(--on-walnut-2);
+    max-width: 32rem;
+  }
+
+  .stimme figure {
+    margin: 0 auto;
+    max-width: 58rem;
+    text-align: center;
+    display: grid;
+    gap: 2.5rem;
+    justify-items: center;
+  }
+  .stimme blockquote {
+    margin: 0;
+    font-family: var(--font-display-stack);
+    font-size: var(--step-3);
+    line-height: 1.2;
+  }
+  .stimme figcaption {
+    display: grid;
+    gap: 0.2rem;
+    font-size: 0.95rem;
+  }
+  .stimme figcaption span {
+    color: var(--ink-3);
+  }
+
+  @media (max-width: 60rem) {
+    .hero,
+    .haltung,
+    .ablauf__raster {
+      grid-template-columns: 1fr;
+    }
+    .hero__bild .img-frame {
+      aspect-ratio: 4 / 3;
+    }
+    .hero__notiz {
+      left: 1rem;
+      bottom: 1rem;
+    }
+    .zahlen dl {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .zahlen dl > div {
+      padding: 1.5rem 1rem 0 0;
+      border-left: 0;
+    }
+    .zahlen dl > div:nth-child(even) {
+      padding-left: 1.25rem;
+      border-left: 1px solid var(--line);
+    }
+    .leistung {
+      grid-template-columns: 2.5rem 1fr 6rem;
+      gap: 0.5rem 1.25rem;
+    }
+    .leistung__kurz {
+      grid-column: 2;
+      grid-row: 2;
+    }
+    .leistung__bild {
+      grid-row: 1 / span 2;
+      grid-column: 3;
+    }
+    .leistung__pfeil {
+      display: none;
+    }
+    .moebel-raster,
+    .journal-raster {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 40rem) {
+    .moebel-raster,
+    .journal-raster {
+      grid-template-columns: 1fr;
+    }
+    .leistung {
+      grid-template-columns: 1fr 5rem;
+    }
+    .leistung__nr {
+      display: none;
+    }
+    .leistung__kurz {
+      grid-column: 1;
+    }
+    .leistung__bild {
+      grid-column: 2;
+    }
+  }
+</style>
