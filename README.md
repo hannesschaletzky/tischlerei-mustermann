@@ -39,7 +39,7 @@ Neue Markdown-Datei anlegen → Seite, Sitemap und RSS-Feed werden automatisch e
 
 Jeder Push auf `main` löst `.github/workflows/deploy.yml` aus:
 
-1. `astro check` und Bau des Docker-Images (amd64 + arm64), Push nach `ghcr.io/hannesschaletzky/tischlerei-mustermann`
+1. `astro check` und Bau des Docker-Images (amd64), Push nach `ghcr.io/hannesschaletzky/tischlerei-mustermann`
 2. `ssh deploy@<server> deploy tischlerei` → Der Server zieht das neue Image und startet den Container neu
 
 Benötigte Secrets (im Environment `production`): `DEPLOY_SSH_KEY`, `DEPLOY_HOST`, `DEPLOY_KNOWN_HOSTS`.
