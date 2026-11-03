@@ -5,6 +5,7 @@ import PageIntro from '../components/PageIntro.astro';
 import Arrow from '../components/Arrow.astro';
 import CallToAction from '../components/CallToAction.astro';
 import { firma } from '../data/site';
+import { maengel } from '../data/maengel';
 
 import meisterBild from '../assets/images/meister-lacht.jpg';
 import werkstattBild from '../assets/images/werkstatt-licht.jpg';
@@ -20,7 +21,7 @@ const geschichte = [
   { jahr: '2022', text: 'Neue Werkstatt Am Sägewerk mit Photovoltaik, Späneheizung und eigener Ausstellung.' },
 ];
 
-const team = [
+const teamGut = [
   { name: 'Max Mustermann', rolle: 'Tischlermeister, Inhaber' },
   { name: 'Lena Mustermann', rolle: 'Gestalterin im Handwerk, Planung' },
   { name: 'Jonas Becker', rolle: 'Tischlermeister, Innenausbau' },
@@ -28,6 +29,8 @@ const team = [
   { name: 'Piotr Nowak', rolle: 'Tischler, Montage' },
   { name: 'Hans Mustermann', rolle: 'Seniorchef, Restaurierung' },
 ];
+// Mängelfassung: ein Eintrag mit Platzhalter aus der Vorlage
+const team = maengel ? [...teamGut.slice(0, 5), { name: 'Neuer Mitarbeiter', rolle: 'Lorem ipsum dolor sit amet' }] : teamGut;
 
 const werte = [
   { titel: 'Ehrliches Material', text: 'Massivholz aus der Region, natürliche Öle, keine Spanplatten hinter schönen Fronten.' },

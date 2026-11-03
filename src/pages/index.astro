@@ -1,5 +1,5 @@
 ---
-import { Picture } from 'astro:assets';
+import { Picture, getImage } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Arrow from '../components/Arrow.astro';
@@ -7,6 +7,7 @@ import ProductCard from '../components/ProductCard.astro';
 import PostCard from '../components/PostCard.astro';
 import CallToAction from '../components/CallToAction.astro';
 import { firma } from '../data/site';
+import { maengel } from '../data/maengel';
 
 import heroBild from '../assets/images/werkbank-sonne.jpg';
 import detailBild from '../assets/images/stechbeitel.jpg';
@@ -21,6 +22,8 @@ const moebel = (await getCollection('moebel'))
 const beitraege = (await getCollection('journal')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()).slice(0, 3);
 
 const jahre = new Date().getFullYear() - firma.gruendung;
+// Mängelfassung: Titelbild viel zu klein ausgeliefert und hochgezogen
+const kleinesTitelbild = maengel && (await getImage({ src: heroBild, width: 320, format: 'jpg', quality: 60 }));
 
 const ablauf = [
   { titel: 'Gespräch', text: 'Wir hören zu, messen auf und klären, was Sie brauchen. Bei Ihnen zu Hause oder in der Werkstatt, kostenlos.' },
@@ -34,11 +37,19 @@ const ablauf = [
   title={firma.name}
   description="Tischlerei Mustermann in Musterstadt: Massivholzmöbel nach Maß, Küchen, Einbauschränke, Treppen und Restaurierung. Meisterbetrieb seit 1987."
 >
+  {
+    maengel && (
+      <p class="alt-hinweis">
+        <strong>Betriebsferien:</strong> Vom 23.12.2024 bis 06.01.2025 bleibt unsere Werkstatt geschlossen. Ab dem 7. Januar
+        sind wir wieder für Sie da.
+      </p>
+    )
+  }
   <section class="hero container">
     <div class="hero__text">
       <span class="eyebrow">Meisterbetrieb seit {firma.gruendung} · {firma.ort}</span>
       <h1 class="display">Möbel, <em>die bleiben.</em></h1>
-      <p class="lead">
+      <p class:list={['lead', { 'lead--blass': maengel }]}>
         Wir entwerfen und bauen Möbel, Küchen und Einbauten aus massivem Holz, so genau, dass sie in Ihren Raum passen,
         und so solide, dass sie Ihre Kinder noch erben.
       </p>
@@ -50,15 +61,27 @@ const ablauf = [
 
     <figure class="hero__bild">
       <div class="img-frame">
-        <Picture
-          src={heroBild}
-          alt="Sonnendurchflutete Werkbank mit Hobeln, Stechbeiteln und Holzstücken vor einem Sprossenfenster"
-          widths={[640, 960, 1280, 1700]}
-          sizes="(min-width: 60rem) 52vw, 92vw"
-          formats={['avif', 'webp']}
-          loading="eager"
-          fetchpriority="high"
-        />
+        {
+          kleinesTitelbild ? (
+            <img
+              src={kleinesTitelbild.src}
+              alt="Sonnendurchflutete Werkbank mit Hobeln, Stechbeiteln und Holzstücken vor einem Sprossenfenster"
+              width="320"
+              height={kleinesTitelbild.attributes.height}
+              class="hero__klein"
+            />
+          ) : (
+            <Picture
+              src={heroBild}
+              alt="Sonnendurchflutete Werkbank mit Hobeln, Stechbeiteln und Holzstücken vor einem Sprossenfenster"
+              widths={[640, 960, 1280, 1700]}
+              sizes="(min-width: 60rem) 52vw, 92vw"
+              formats={['avif', 'webp']}
+              loading="eager"
+              fetchpriority="high"
+            />
+          )
+        }
       </div>
       <figcaption class="hero__notiz">
         <span class="hero__punkt" aria-hidden="true"></span>
@@ -90,7 +113,13 @@ const ablauf = [
         <Picture src={detailBild} alt="Hand führt einen Stechbeitel durch helles Holz, Späne liegen auf dem Brett" widths={[480, 800, 1100]} sizes="(min-width: 60rem) 28vw, 60vw" formats={['avif', 'webp']} />
       </div>
       <div class="img-frame haltung__b2 reveal">
-        <Picture src={hobelBild} alt="Tischler mit Lederschürze hobelt ein Brett an der Werkbank" widths={[400, 700, 900]} sizes="(min-width: 60rem) 20vw, 45vw" formats={['avif', 'webp']} />
+        {
+          maengel ? (
+            <img src="/bilder/werkbank-hobeln.jpg" alt="Tischler hobelt ein Brett" class="bild-fehlt" />
+          ) : (
+            <Picture src={hobelBild} alt="Tischler mit Lederschürze hobelt ein Brett an der Werkbank" widths={[400, 700, 900]} sizes="(min-width: 60rem) 20vw, 45vw" formats={['avif', 'webp']} />
+          )
+        }
       </div>
     </div>
   </section>
@@ -526,7 +555,12 @@ const ablauf = [
       grid-template-columns: 1fr;
     }
     .leistung {
-      grid-template-columns: 1fr 5rem;
+      grid-template-columns: minmax(0, 1fr) 5rem;
+    }
+    /* Lange Titel wie „Einbauschränke“ trennen, statt bei 320 px über den Rand zu ragen */
+    .leistung__titel {
+      hyphens: auto;
+      overflow-wrap: break-word;
     }
     .leistung__nr {
       display: none;
@@ -537,5 +571,25 @@ const ablauf = [
     .leistung__bild {
       grid-column: 2;
     }
+  }
+  /* Mängelfassung: veralteter Hinweis, blasser Text, hochgezogenes kleines Bild */
+  .alt-hinweis {
+    padding: 0.7rem 1rem;
+    background: #f3d34a;
+    color: #3a2f00;
+    text-align: center;
+    font-size: 0.95rem;
+  }
+  .lead--blass {
+    color: #c4b8a6;
+  }
+  .bild-fehlt {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+  }
+  .hero__klein {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 </style>

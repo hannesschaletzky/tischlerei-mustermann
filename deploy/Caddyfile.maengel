@@ -9,6 +9,8 @@
 	encode zstd gzip
 
 	header Cache-Control "public, max-age=600"
+	# Demo: nicht in Suchmaschinen, auch nicht Bilder und Dateien
+	header X-Robots-Tag "noindex, nofollow"
 	header -Server
 
 	@formular {

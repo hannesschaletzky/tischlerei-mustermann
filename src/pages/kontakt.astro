@@ -72,7 +72,7 @@ const leistungen = (await getCollection('leistungen')).sort((a, b) => a.data.ord
       <div class="block">
         <h2 class="block__titel">Direkt</h2>
         <a class="gross" href={firma.telefonHref}>{firma.telefon}</a>
-        <a class="gross" href={`mailto:${firma.email}`}>{firma.email}</a>
+        <a class:list={['gross', { 'gross--starr': maengel }]} href={`mailto:${firma.email}`}>{firma.email}</a>
       </div>
       <div class="block">
         <h2 class="block__titel">Werkstatt &amp; Ausstellung</h2>
@@ -294,6 +294,14 @@ const leistungen = (await getCollection('leistungen')).sort((a, b) => a.data.ord
     line-height: 1.2;
     text-decoration: none;
     overflow-wrap: anywhere;
+  }
+  /* Mängelfassung: lange Adresse bricht nicht um und ragt auf dem Handy über den Rand */
+  .gross--starr {
+    overflow-wrap: normal;
+    white-space: nowrap;
+  }
+  .seite:has(.gross--starr) {
+    min-width: 0;
   }
   .gross:hover {
     color: var(--oak-2);
