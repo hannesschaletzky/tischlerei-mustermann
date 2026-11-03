@@ -1,5 +1,7 @@
 ---
 import { Picture, getImage } from 'astro:assets';
+import GrossesBild from './maengel/GrossesBild.astro';
+import { maengel } from '../data/maengel';
 import type { CollectionEntry } from 'astro:content';
 import { euro } from '../data/site';
 
@@ -20,7 +22,9 @@ const einfach = ohneAlt && (await getImage({ src: data.image, width: 800, format
   <a href={`/moebel/${produkt.id}/`} class="karte__link">
     <div class="img-frame hover-zoom karte__bild">
       {
-        einfach ? (
+        maengel && !einfach ? (
+          <GrossesBild src={data.image} alt={data.imageAlt} />
+        ) : einfach ? (
           <img src={einfach.src} width={einfach.attributes.width} height={einfach.attributes.height} loading={eager ? 'eager' : 'lazy'} />
         ) : (
           <Picture src={data.image} alt={data.imageAlt} widths={[360, 480, 640, 800, 1000]}

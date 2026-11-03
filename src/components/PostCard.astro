@@ -1,5 +1,7 @@
 ---
 import { Picture } from 'astro:assets';
+import GrossesBild from './maengel/GrossesBild.astro';
+import { maengel } from '../data/maengel';
 import type { CollectionEntry } from 'astro:content';
 import { datum } from '../data/site';
 
@@ -16,15 +18,21 @@ const { data } = beitrag;
 <article class:list={['beitrag reveal', { 'beitrag--gross': gross }]}>
   <a href={`/journal/${beitrag.id}/`} class="beitrag__link">
     <div class="img-frame hover-zoom beitrag__bild">
-      <Picture
-        src={data.image}
-        alt={data.imageAlt}
-        widths={gross ? [480, 720, 1100, 1600] : [360, 480, 640, 800]}
-        sizes={gross ? '(min-width: 64rem) 55vw, 92vw' : '(min-width: 64rem) 30vw, (min-width: 40rem) 45vw, 92vw'}
-        formats={['avif', 'webp']}
-        loading={eager ? 'eager' : 'lazy'}
-        fetchpriority={eager ? 'high' : 'auto'}
-      />
+      {
+        maengel ? (
+          <GrossesBild src={data.image} alt={data.imageAlt} />
+        ) : (
+          <Picture
+            src={data.image}
+            alt={data.imageAlt}
+            widths={gross ? [480, 720, 1100, 1600] : [360, 480, 640, 800]}
+            sizes={gross ? '(min-width: 64rem) 55vw, 92vw' : '(min-width: 64rem) 30vw, (min-width: 40rem) 45vw, 92vw'}
+            formats={['avif', 'webp']}
+            loading={eager ? 'eager' : 'lazy'}
+            fetchpriority={eager ? 'high' : 'auto'}
+          />
+        )
+      }
     </div>
     <div class="beitrag__text">
       <p class="beitrag__meta">

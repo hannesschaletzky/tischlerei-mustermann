@@ -78,6 +78,7 @@ for (const json of strukturiert) {
     <title>{seitenTitel}</title>
     {description && <meta name="description" content={description} />}
     {maengel && <meta name="robots" content="noindex, nofollow" />}
+    {maengel && <script is:inline src="/js/slider.js"></script>}
     <link rel="canonical" href={canonical} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />

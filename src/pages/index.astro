@@ -1,5 +1,6 @@
 ---
-import { Picture, getImage } from 'astro:assets';
+import { Picture } from 'astro:assets';
+import GrossesBild from '../components/maengel/GrossesBild.astro';
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Arrow from '../components/Arrow.astro';
@@ -22,8 +23,6 @@ const moebel = (await getCollection('moebel'))
 const beitraege = (await getCollection('journal')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()).slice(0, 3);
 
 const jahre = new Date().getFullYear() - firma.gruendung;
-// Mängelfassung: Titelbild viel zu klein ausgeliefert und hochgezogen
-const kleinesTitelbild = maengel && (await getImage({ src: heroBild, width: 400, format: 'jpg', quality: 70 }));
 
 const ablauf = [
   { titel: 'Gespräch', text: 'Wir hören zu, messen auf und klären, was Sie brauchen. Bei Ihnen zu Hause oder in der Werkstatt, kostenlos.' },
@@ -54,14 +53,8 @@ const ablauf = [
     <figure class="hero__bild">
       <div class="img-frame">
         {
-          kleinesTitelbild ? (
-            <img
-              src={kleinesTitelbild.src}
-              alt="Sonnendurchflutete Werkbank mit Hobeln, Stechbeiteln und Holzstücken vor einem Sprossenfenster"
-              width="400"
-              height={kleinesTitelbild.attributes.height}
-              class="hero__klein"
-            />
+          maengel ? (
+            <GrossesBild src={heroBild} alt="Sonnendurchflutete Werkbank mit Hobeln, Stechbeiteln und Holzstücken vor einem Sprossenfenster" />
           ) : (
             <Picture
               src={heroBild}
@@ -102,7 +95,13 @@ const ablauf = [
     </div>
     <div class="haltung__bilder">
       <div class="img-frame haltung__b1 reveal">
-        <Picture src={detailBild} alt="Hand führt einen Stechbeitel durch helles Holz, Späne liegen auf dem Brett" widths={[480, 800, 1100]} sizes="(min-width: 60rem) 28vw, 60vw" formats={['avif', 'webp']} />
+        {
+          maengel ? (
+            <GrossesBild src={detailBild} alt="Hand führt einen Stechbeitel durch helles Holz, Späne liegen auf dem Brett" />
+          ) : (
+            <Picture src={detailBild} alt="Hand führt einen Stechbeitel durch helles Holz, Späne liegen auf dem Brett" widths={[480, 800, 1100]} sizes="(min-width: 60rem) 28vw, 60vw" formats={['avif', 'webp']} />
+          )
+        }
       </div>
       <div class="img-frame haltung__b2 reveal">
         {
@@ -170,7 +169,13 @@ const ablauf = [
         <span class="eyebrow">So arbeiten wir</span>
         <h2 id="ablauf-titel" class="h2">Vom ersten Gespräch bis zur <em>Montage</em></h2>
         <div class="img-frame ablauf__bild">
-          <Picture src={ablaufBild} alt="Hobel, Stechbeitel und Winkel ordentlich an einer dunklen Werkstattwand aufgehängt" widths={[480, 800, 1100]} sizes="(min-width: 60rem) 38vw, 92vw" formats={['avif', 'webp']} />
+          {
+            maengel ? (
+              <GrossesBild src={ablaufBild} alt="Hobel, Stechbeitel und Winkel ordentlich an einer dunklen Werkstattwand aufgehängt" />
+            ) : (
+              <Picture src={ablaufBild} alt="Hobel, Stechbeitel und Winkel ordentlich an einer dunklen Werkstattwand aufgehängt" widths={[480, 800, 1100]} sizes="(min-width: 60rem) 38vw, 92vw" formats={['avif', 'webp']} />
+            )
+          }
         </div>
       </div>
       <ol class="schritte">
@@ -564,7 +569,7 @@ const ablauf = [
       grid-column: 2;
     }
   }
-  /* Mängelfassung: etwas zu heller Text, zu klein ausgeliefertes Titelbild, fehlendes Bild */
+  /* Mängelfassung: etwas zu heller Text, fehlendes Bild */
   /* knapp unter dem Mindestkontrast (3,7 : 1 statt 4,5 : 1): wirkt nur etwas heller */
   .lead--blass {
     color: #857a6b;
@@ -572,10 +577,5 @@ const ablauf = [
   .bild-fehlt {
     width: 100%;
     aspect-ratio: 4 / 5;
-  }
-  .hero__klein {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
   }
 </style>
