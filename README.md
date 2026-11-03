@@ -41,7 +41,8 @@ Jeder Push auf `main` löst `.github/workflows/deploy.yml` aus:
 
 1. `astro check` und Bau der Docker-Images (amd64), Push nach `ghcr.io/hannesschaletzky/tischlerei-mustermann`:
    `latest` (die Website) und `maengel` (die Mängelfassung, siehe unten)
-2. `ssh deploy@<server> deploy tischlerei` → Der Server zieht das neue Image und startet den Container neu
+2. `ssh deploy@<server> deploy tischlerei` und `deploy tischlerei-maengel` → Der Server zieht die neuen Images und
+   startet die Container neu
 
 Benötigte Secrets (im Environment `production`): `DEPLOY_SSH_KEY`, `DEPLOY_HOST`, `DEPLOY_KNOWN_HOSTS`.
 Details stehen im infra-Repo.
