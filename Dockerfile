@@ -6,9 +6,13 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
-RUN npm run build
+# MAENGEL=1 baut die Mängelfassung für den Beispielbericht des Website-Check-ups
+ARG MAENGEL=0
+RUN MAENGEL=$MAENGEL npm run build
 
 FROM caddy:2-alpine
-COPY deploy/Caddyfile /etc/caddy/Caddyfile
+ARG MAENGEL=0
+COPY deploy/ /tmp/deploy/
+RUN if [ "$MAENGEL" = 1 ]; then cp /tmp/deploy/Caddyfile.maengel /etc/caddy/Caddyfile; else cp /tmp/deploy/Caddyfile /etc/caddy/Caddyfile; fi && rm -rf /tmp/deploy
 COPY --from=build /app/dist /srv
 EXPOSE 80

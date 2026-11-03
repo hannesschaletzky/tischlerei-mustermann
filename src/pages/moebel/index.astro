@@ -4,6 +4,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import PageIntro from '../../components/PageIntro.astro';
 import ProductCard from '../../components/ProductCard.astro';
 import CallToAction from '../../components/CallToAction.astro';
+import { maengel } from '../../data/maengel';
 
 const moebel = (await getCollection('moebel')).sort((a, b) => a.data.order - b.data.order);
 const filter = [
@@ -38,8 +39,15 @@ const filter = [
     </fieldset>
 
     <div class="raster">
-      {moebel.map((m, i) => <ProductCard produkt={m} ebene="h2" eager={i === 0} />)}
+      {moebel.map((m, i) => <ProductCard produkt={m} ebene={maengel ? 'h3' : 'h2'} eager={i === 0} ohneAlt={maengel} />)}
     </div>
+    {
+      maengel && (
+        <p class="partner">
+          Unser Holz beziehen wir vom <a href="/partner/saegewerk-musterwald/">Sägewerk Musterwald</a>.
+        </p>
+      )
+    }
   </section>
 
   <CallToAction
@@ -49,6 +57,9 @@ const filter = [
 </BaseLayout>
 
 <style>
+  .partner {
+    margin-top: 3rem;
+  }
   .moebel {
     padding-bottom: var(--section);
   }

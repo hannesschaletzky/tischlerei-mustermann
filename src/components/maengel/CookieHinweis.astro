@@ -1,0 +1,65 @@
+---
+// Typischer Cookie-Hinweis: „Ablehnen“ klein und grau. Setzt selbst keine Cookies, „Alle akzeptieren“ schließt ihn nur.
+---
+
+<div class="cookie" role="dialog" aria-label="Cookie-Einstellungen">
+  <p>
+    Wir verwenden Cookies, um Ihnen die bestmögliche Nutzung unserer Website zu ermöglichen. Weitere Informationen finden
+    Sie in unserer <a href="/datenschutz/">Datenschutzerklärung</a>.
+  </p>
+  <div class="cookie__knoepfe">
+    <button type="button" class="cookie__ja">Alle akzeptieren</button>
+    <a href="#" class="cookie__nein">Ablehnen</a>
+  </div>
+</div>
+
+<script>
+  for (const knopf of document.querySelectorAll('.cookie__ja, .cookie__nein')) {
+    knopf.addEventListener('click', (e) => {
+      e.preventDefault();
+      document.querySelector('.cookie')?.remove();
+    });
+  }
+</script>
+
+<style>
+  .cookie {
+    position: fixed;
+    inset: auto 1rem 1rem 1rem;
+    z-index: 50;
+    max-width: 44rem;
+    margin-inline: auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.5rem;
+    padding: 1.1rem 1.4rem;
+    background: #fff;
+    color: #222;
+    border-radius: 0.6rem;
+    box-shadow: 0 0.5rem 2rem rgb(0 0 0 / 0.25);
+    font-size: 0.9rem;
+  }
+  .cookie p {
+    flex: 1 1 20rem;
+    margin: 0;
+  }
+  .cookie__knoepfe {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+  }
+  .cookie__ja {
+    padding: 0.7rem 1.3rem;
+    border: 0;
+    border-radius: 0.4rem;
+    background: #b5651d;
+    color: #fff;
+    font: inherit;
+    font-weight: 600;
+  }
+  .cookie__nein {
+    color: #aaa;
+    font-size: 0.8rem;
+  }
+</style>

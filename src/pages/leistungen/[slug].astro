@@ -5,6 +5,7 @@ import type { GetStaticPaths } from 'astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Arrow from '../../components/Arrow.astro';
 import CallToAction from '../../components/CallToAction.astro';
+import { maengel, ohneBeschreibung } from '../../data/maengel';
 
 export const getStaticPaths = (async () => {
   const leistungen = await getCollection('leistungen');
@@ -27,7 +28,7 @@ const jsonLd = {
 };
 ---
 
-<BaseLayout title={leistung.data.title} description={leistung.data.description} image={leistung.data.image} jsonLd={jsonLd} krumen={[{ name: 'Leistungen', href: '/leistungen/' }]}>
+<BaseLayout title={leistung.data.title} description={maengel && ohneBeschreibung.includes(leistung.id) ? undefined : leistung.data.description} image={leistung.data.image} jsonLd={jsonLd} krumen={[{ name: 'Leistungen', href: '/leistungen/' }]}>
   <section class="kopf container">
     <nav aria-label="Brotkrumen" class="krumen">
       <a href="/leistungen/">Leistungen</a> <span aria-hidden="true">/</span> <span aria-current="page">{leistung.data.title}</span>

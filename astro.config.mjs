@@ -2,8 +2,11 @@
 import { defineConfig, fontProviders } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
+// Mängelfassung für den Beispielbericht des Website-Check-ups (MAENGEL=1 npm run build): eigene Adresse, keine CSP
+const maengel = process.env.MAENGEL === '1';
+
 export default defineConfig({
-  site: 'https://tischlerei-mustermann.hschaletzky.com',
+  site: maengel ? 'https://vorher.tischlerei-mustermann.hschaletzky.com' : 'https://tischlerei-mustermann.hschaletzky.com',
   trailingSlash: 'always',
   integrations: [sitemap()],
   prefetch: { prefetchAll: true, defaultStrategy: 'hover' },
@@ -16,19 +19,21 @@ export default defineConfig({
   },
   // Ein gemeinsames Stylesheet statt vieler kleiner: ein Request, danach aus dem Cache
   vite: { build: { cssCodeSplit: false } },
-  security: {
-    csp: {
-      directives: [
-        "default-src 'self'",
-        "img-src 'self' data:",
-        "font-src 'self'",
-        "connect-src 'self'",
-        "object-src 'none'",
-        "base-uri 'self'",
-        "form-action 'self'",
-      ],
+  ...(maengel ? {} : {
+    security: {
+      csp: {
+        directives: [
+          "default-src 'self'",
+          "img-src 'self' data:",
+          "font-src 'self'",
+          "connect-src 'self'",
+          "object-src 'none'",
+          "base-uri 'self'",
+          "form-action 'self'",
+        ],
+      },
     },
-  },
+  }),
   fonts: [
     {
       provider: fontProviders.fontsource(),

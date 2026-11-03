@@ -4,6 +4,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import PageIntro from '../components/PageIntro.astro';
 import Arrow from '../components/Arrow.astro';
 import { firma } from '../data/site';
+import { maengel } from '../data/maengel';
 
 const leistungen = (await getCollection('leistungen')).sort((a, b) => a.data.order - b.data.order);
 ---
@@ -21,12 +22,12 @@ const leistungen = (await getCollection('leistungen')).sort((a, b) => a.data.ord
   <div class="container kontakt">
     <form class="formular" id="anfrage" method="post" novalidate>
       <div class="feld">
-        <label for="name">Name <span aria-hidden="true">*</span></label>
-        <input id="name" name="name" type="text" autocomplete="name" required />
+        {!maengel && <label for="name">Name <span aria-hidden="true">*</span></label>}
+        <input id="name" name="name" type="text" autocomplete="name" required placeholder={maengel ? 'Name' : undefined} />
       </div>
       <div class="feld feld--halb">
-        <label for="email">E-Mail <span aria-hidden="true">*</span></label>
-        <input id="email" name="email" type="email" autocomplete="email" required />
+        {!maengel && <label for="email">E-Mail <span aria-hidden="true">*</span></label>}
+        <input id="email" name="email" type="email" autocomplete="email" required placeholder={maengel ? 'E-Mail' : undefined} />
       </div>
       <div class="feld feld--halb">
         <label for="telefon">Telefon <span class="optional">(optional)</span></label>
@@ -50,8 +51,8 @@ const leistungen = (await getCollection('leistungen')).sort((a, b) => a.data.ord
         </div>
       </fieldset>
       <div class="feld">
-        <label for="nachricht">Ihr Vorhaben <span aria-hidden="true">*</span></label>
-        <textarea id="nachricht" name="nachricht" rows="6" required placeholder="Was möchten Sie bauen lassen? Maße, Holz, Zeitrahmen – alles hilft."
+        {!maengel && <label for="nachricht">Ihr Vorhaben <span aria-hidden="true">*</span></label>}
+        <textarea id="nachricht" name="nachricht" rows="6" required placeholder={maengel ? 'Ihre Nachricht' : 'Was möchten Sie bauen lassen? Maße, Holz, Zeitrahmen – alles hilft.'}
         ></textarea>
       </div>
       <div class="feld">
@@ -62,7 +63,7 @@ const leistungen = (await getCollection('leistungen')).sort((a, b) => a.data.ord
       </div>
       <div class="feld absenden">
         <button type="submit" class="btn btn--primary">Anfrage senden <Arrow /></button>
-        <p class="hinweis">Beispielseite: Das Formular verschickt keine Daten.</p>
+        {!maengel && <p class="hinweis">Beispielseite: Das Formular verschickt keine Daten.</p>}
       </div>
       <p class="meldung" role="status" aria-live="polite" hidden></p>
     </form>
@@ -86,7 +87,7 @@ const leistungen = (await getCollection('leistungen')).sort((a, b) => a.data.ord
         <h2 class="block__titel">Öffnungszeiten</h2>
         <dl>
           {
-            firma.oeffnungszeiten.map((o) => (
+            (maengel ? [{ tage: 'Montag – Freitag', zeit: '8:00 – 17:00 Uhr' }] : firma.oeffnungszeiten).map((o) => (
               <div>
                 <dt>{o.tage}</dt>
                 <dd>{o.zeit}</dd>

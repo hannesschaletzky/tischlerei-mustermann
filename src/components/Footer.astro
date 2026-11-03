@@ -1,9 +1,10 @@
 ---
 import Logo from './Logo.astro';
 import { firma, navigation, ersteller } from '../data/site';
+import { maengel } from '../data/maengel';
 ---
 
-<footer class="footer dark">
+<footer class:list={['footer dark', { 'footer--maengel': maengel }]}>
   <div class="container">
     <div class="footer__top">
       <p class="footer__claim">
@@ -61,12 +62,12 @@ import { firma, navigation, ersteller } from '../data/site';
     </div>
 
     <div class="footer__bottom">
-      <p>© {new Date().getFullYear()} {firma.name} · Ein fiktives Unternehmen</p>
+      <p>{maengel ? `© 2021 ${firma.name} GmbH` : `© ${new Date().getFullYear()} ${firma.name} · Ein fiktives Unternehmen`}</p>
       <ul>
         <li><a href="/impressum/">Impressum</a></li>
         <li><a href="/datenschutz/">Datenschutz</a></li>
         <li><a href="/rss.xml">RSS</a></li>
-        <li>Website von <a href={ersteller.url}>{ersteller.name}</a></li>
+        {!maengel && <li>Website von <a href={ersteller.url}>{ersteller.name}</a></li>}
       </ul>
     </div>
   </div>
@@ -163,6 +164,10 @@ import { firma, navigation, ersteller } from '../data/site';
     flex-wrap: wrap;
     gap: 0.5rem 1.5rem;
     font-size: inherit;
+  }
+  /* Mängelfassung: zu wenig Kontrast in der letzten Zeile */
+  .footer--maengel .footer__bottom {
+    color: #5a4c40;
   }
   .footer__bottom li + li {
     margin-top: 0;

@@ -1,0 +1,27 @@
+# Mängelfassung für den Beispielbericht: ohne Sicherheits-Header und mit kurzen Cache-Zeiten
+{
+	admin off
+	auto_https off
+}
+
+:80 {
+	root * /srv
+	encode zstd gzip
+
+	header Cache-Control "public, max-age=600"
+	header -Server
+
+	@formular {
+		method POST
+		path /kontakt/
+	}
+	redir @formular /kontakt/#anfrage 303
+
+	file_server
+
+	handle_errors 404 {
+		encode zstd gzip
+		rewrite * /404.html
+		file_server
+	}
+}
