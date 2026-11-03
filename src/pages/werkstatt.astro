@@ -145,6 +145,7 @@ const werte = [
           Wir bilden jedes Jahr aus und suchen ab August 2027 wieder eine Auszubildende oder einen Auszubildenden zur
           Tischlerin oder zum Tischler. Praktika sind jederzeit möglich, auch für ein paar Tage in den Ferien.
         </p>
+        {maengel && <p class="ausbildung__frist">Bewerbungen bis zum 31.03.2024 an {firma.email}</p>}
         <a href="/kontakt/" class="link-arrow">Melde dich bei uns <Arrow /></a>
       </div>
     </div>
@@ -335,5 +336,9 @@ const werte = [
       grid-template-columns: 1fr;
       gap: 0.5rem;
     }
+  }
+  .ausbildung__frist {
+    font-size: 0.9rem;
+    color: var(--ink-2);
   }
 </style>

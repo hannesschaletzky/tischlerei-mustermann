@@ -23,7 +23,7 @@ const beitraege = (await getCollection('journal')).sort((a, b) => b.data.date.va
 
 const jahre = new Date().getFullYear() - firma.gruendung;
 // Mängelfassung: Titelbild viel zu klein ausgeliefert und hochgezogen
-const kleinesTitelbild = maengel && (await getImage({ src: heroBild, width: 320, format: 'jpg', quality: 60 }));
+const kleinesTitelbild = maengel && (await getImage({ src: heroBild, width: 400, format: 'jpg', quality: 70 }));
 
 const ablauf = [
   { titel: 'Gespräch', text: 'Wir hören zu, messen auf und klären, was Sie brauchen. Bei Ihnen zu Hause oder in der Werkstatt, kostenlos.' },
@@ -37,14 +37,6 @@ const ablauf = [
   title={firma.name}
   description="Tischlerei Mustermann in Musterstadt: Massivholzmöbel nach Maß, Küchen, Einbauschränke, Treppen und Restaurierung. Meisterbetrieb seit 1987."
 >
-  {
-    maengel && (
-      <p class="alt-hinweis">
-        <strong>Betriebsferien:</strong> Vom 23.12.2024 bis 06.01.2025 bleibt unsere Werkstatt geschlossen. Ab dem 7. Januar
-        sind wir wieder für Sie da.
-      </p>
-    )
-  }
   <section class="hero container">
     <div class="hero__text">
       <span class="eyebrow">Meisterbetrieb seit {firma.gruendung} · {firma.ort}</span>
@@ -66,7 +58,7 @@ const ablauf = [
             <img
               src={kleinesTitelbild.src}
               alt="Sonnendurchflutete Werkbank mit Hobeln, Stechbeiteln und Holzstücken vor einem Sprossenfenster"
-              width="320"
+              width="400"
               height={kleinesTitelbild.attributes.height}
               class="hero__klein"
             />
@@ -115,7 +107,7 @@ const ablauf = [
       <div class="img-frame haltung__b2 reveal">
         {
           maengel ? (
-            <img src="/bilder/werkbank-hobeln.jpg" alt="Tischler hobelt ein Brett" class="bild-fehlt" />
+            <img src="/bilder/werkbank-hobeln.jpg" alt="" class="bild-fehlt" />
           ) : (
             <Picture src={hobelBild} alt="Tischler mit Lederschürze hobelt ein Brett an der Werkbank" widths={[400, 700, 900]} sizes="(min-width: 60rem) 20vw, 45vw" formats={['avif', 'webp']} />
           )
@@ -572,16 +564,10 @@ const ablauf = [
       grid-column: 2;
     }
   }
-  /* Mängelfassung: veralteter Hinweis, blasser Text, hochgezogenes kleines Bild */
-  .alt-hinweis {
-    padding: 0.7rem 1rem;
-    background: #f3d34a;
-    color: #3a2f00;
-    text-align: center;
-    font-size: 0.95rem;
-  }
+  /* Mängelfassung: etwas zu heller Text, zu klein ausgeliefertes Titelbild, fehlendes Bild */
+  /* knapp unter dem Mindestkontrast (3,7 : 1 statt 4,5 : 1): wirkt nur etwas heller */
   .lead--blass {
-    color: #c4b8a6;
+    color: #857a6b;
   }
   .bild-fehlt {
     width: 100%;
