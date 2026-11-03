@@ -47,6 +47,19 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      # Mängelfassung für den Beispielbericht des Website-Check-ups, gleicher Code mit MAENGEL=1
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64
+          push: true
+          build-args: MAENGEL=1
+          tags: |
+            ${{ env.IMAGE }}:maengel
+            ${{ env.IMAGE }}:maengel-${{ github.sha }}
+          cache-from: type=gha,scope=maengel
+          cache-to: type=gha,mode=max,scope=maengel
+
   deploy:
     needs: build
     runs-on: ubuntu-latest

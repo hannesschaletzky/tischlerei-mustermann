@@ -39,11 +39,26 @@ Neue Markdown-Datei anlegen → Seite, Sitemap und RSS-Feed werden automatisch e
 
 Jeder Push auf `main` löst `.github/workflows/deploy.yml` aus:
 
-1. `astro check` und Bau des Docker-Images (amd64), Push nach `ghcr.io/hannesschaletzky/tischlerei-mustermann`
+1. `astro check` und Bau der Docker-Images (amd64), Push nach `ghcr.io/hannesschaletzky/tischlerei-mustermann`:
+   `latest` (die Website) und `maengel` (die Mängelfassung, siehe unten)
 2. `ssh deploy@<server> deploy tischlerei` → Der Server zieht das neue Image und startet den Container neu
 
 Benötigte Secrets (im Environment `production`): `DEPLOY_SSH_KEY`, `DEPLOY_HOST`, `DEPLOY_KNOWN_HOSTS`.
 Details stehen im infra-Repo.
+
+## Mängelfassung
+
+`MAENGEL=1 npm run build` baut aus demselben Code eine Fassung mit typischen Mängeln kleiner Websites, für den
+Beispielbericht des Website-Check-ups: **https://vorher.tischlerei-mustermann.hschaletzky.com**. Sie zeigt nur
+Sichtbares und Einstellungen, keine echten Datenflüsse zu Dritten, trägt überall `noindex` und verlinkt in der
+Demo-Leiste die fehlerfreie Fassung und das echte Impressum.
+
+| Was                                 | Wo                                                             |
+| ----------------------------------- | -------------------------------------------------------------- |
+| Schalter, Leistungen ohne Beschreibung | `src/data/maengel.ts`                                      |
+| Cookie-Hinweis, Impressum, Datenschutz | `src/components/maengel/`                                  |
+| Übrige Mängel                       | auf den Seiten bei `maengel` (Suche nach `maengel`)           |
+| Server ohne Sicherheits-Header      | `deploy/Caddyfile.maengel` (Docker: `--build-arg MAENGEL=1`)  |
 
 ## Bildnachweise
 
