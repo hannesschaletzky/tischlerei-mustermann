@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # Build läuft immer auf der Plattform des Builders, nur das schlanke Caddy-Image wird pro Architektur gebaut.
-FROM --platform=$BUILDPLATFORM node:24-alpine AS build
+FROM --platform=$BUILDPLATFORM node:24.22.3-alpine3.24 AS build
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
@@ -10,7 +10,7 @@ COPY . .
 ARG MAENGEL=0
 RUN MAENGEL=$MAENGEL npm run build
 
-FROM caddy:2-alpine
+FROM caddy:2.11.9-alpine
 ARG MAENGEL=0
 COPY deploy/ /tmp/deploy/
 RUN if [ "$MAENGEL" = 1 ]; then cp /tmp/deploy/Caddyfile.maengel /etc/caddy/Caddyfile; else cp /tmp/deploy/Caddyfile /etc/caddy/Caddyfile; fi && rm -rf /tmp/deploy
