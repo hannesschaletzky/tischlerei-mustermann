@@ -12,15 +12,21 @@ import { maengel } from '../data/maengel';
     ) : (
       <>
         <p>
-          Diese Beispielwebsite wurde so gebaut, dass sie möglichst wenige Daten verarbeitet. Es gibt keine Cookies, kein
-          Tracking, keine Analysewerkzeuge und keine eingebundenen Inhalte von Drittanbietern. Schriften und Bilder werden vom
-          eigenen Server ausgeliefert.
+          Diese Beispielwebsite wurde so gebaut, dass sie möglichst wenige Daten verarbeitet. Es gibt keine Cookies und
+          keine eingebundenen Inhalte von Drittanbietern. Schriften und Bilder werden vom eigenen Server ausgeliefert.
         </p>
 
         <h2>Verantwortlicher</h2>
         <p>
           Verantwortlich ist {ersteller.name}. Kontaktdaten und weitere Angaben finden Sie in der{' '}
           <a href={`${ersteller.url}/datenschutz`}>Datenschutzerklärung von hschaletzky.com</a>.
+        </p>
+
+        <h2>Besucherstatistik</h2>
+        <p>
+          Für eine anonyme Besucherstatistik ohne Cookies nutze ich Plausible Analytics auf meinem eigenen Server. Es werden
+          keine Daten an Dritte übermittelt und keine Profile erstellt. Einzelheiten stehen in der{' '}
+          <a href={`${ersteller.url}/datenschutz`}>Datenschutzerklärung von hschaletzky.com</a> unter Abschnitt 5.
         </p>
 
         <h2>Server-Logdateien</h2>

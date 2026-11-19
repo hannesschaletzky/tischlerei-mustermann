@@ -102,6 +102,18 @@ for (const json of strukturiert) {
     <Font cssVariable="--font-body" preload />
 
     {strukturiert.map((json) => <script type="application/ld+json" set:html={json} />)}
+
+    <!-- Besucherstatistik ohne Cookies (Plausible von hschaletzky.com), über diese Domain.
+         Nicht in der Mängelfassung, die ist nur für den Beispielbericht da -->
+    {!maengel && <script async src="/js/pa-AnnsvAXVRFHrSJSEEKNMn.js"></script>}
+    {
+      !maengel && (
+        <script is:inline>
+          window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+          plausible.init({ endpoint: '/api/event' });
+        </script>
+      )
+    }
   </head>
   <body>
     <a class="skip-link" href="#inhalt">Zum Inhalt springen</a>
