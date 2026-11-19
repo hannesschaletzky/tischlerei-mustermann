@@ -10,6 +10,12 @@ updates:
     groups:
       npm:
         update-types: [minor, patch]
+    ignore:
+      # astro check (@astrojs/check) unterstützt TypeScript 7 noch nicht und bricht damit ab. Typprüfung
+      # mit TS 7 gibt es erst experimentell ab TS 7.1:
+      # https://github.com/withastro/astro/tree/main/packages/language-tools/ts-content-mapper#usage
+      - dependency-name: typescript
+        versions: [">=7"]
   - package-ecosystem: github-actions
     directory: /
     schedule:
