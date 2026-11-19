@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # Build läuft immer auf der Plattform des Builders, nur das schlanke Caddy-Image wird pro Architektur gebaut.
-FROM --platform=$BUILDPLATFORM node:24.22.3-alpine3.24 AS build
+FROM --platform=$BUILDPLATFORM node:26.13.1-alpine3.24 AS build
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
